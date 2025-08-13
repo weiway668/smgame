@@ -1,0 +1,30 @@
+{
+  "name": "small-dream-game",
+  "version": "1.0.0",
+  "description": "小梦想游戏 - 儿童益智游戏微信小程序",
+  "main": "app.js",
+  "scripts": {
+    "dev": "微信开发者工具打开项目",
+    "build": "微信开发者工具上传代码",
+    "test": "echo \"请使用微信开发者工具测试\""
+  },
+  "keywords": [
+    "微信小程序",
+    "游戏",
+    "儿童",
+    "益智",
+    "迷宫",
+    "消消乐"
+  ],
+  "author": "小梦想游戏开发团队",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/small-dream-game.git"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "微信开发者工具": ">=1.05"
+  }
+}

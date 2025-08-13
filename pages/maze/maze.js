@@ -3,6 +3,15 @@
 
 const MazeGenerator = require('../../utils/mazeGenerator.js');
 
+// requestAnimationFrame polyfill for WeChat Mini Program
+const requestAnimationFrame = (callback) => {
+  return setTimeout(callback, 1000 / 60);
+};
+
+const cancelAnimationFrame = (id) => {
+  clearTimeout(id);
+};
+
 Page({
   data: {
     // 游戏状态
@@ -51,6 +60,17 @@ Page({
   
   // Canvas上下文
   ctx: null,
+  canvas: null,
+  
+  // 离屏Canvas用于缓存背景
+  offscreenCanvas: null,
+  offscreenCtx: null,
+  backgroundCached: false,
+  
+  // 动画控制
+  animationId: null,
+  lastPlayerX: -1,
+  lastPlayerY: -1,
 
   onLoad(options) {
     console.log('迷宫游戏加载');
@@ -78,17 +98,26 @@ Page({
       .fields({ node: true, size: true })
       .exec((res) => {
         if (res[0]) {
-          const canvas = res[0].node;
-          this.ctx = canvas.getContext('2d');
+          this.canvas = res[0].node;
+          this.ctx = this.canvas.getContext('2d');
           
           // 设置Canvas尺寸
           const dpr = wx.getSystemInfoSync().pixelRatio;
-          canvas.width = this.data.canvasWidth * dpr;
-          canvas.height = this.data.canvasHeight * dpr;
+          this.canvas.width = this.data.canvasWidth * dpr;
+          this.canvas.height = this.data.canvasHeight * dpr;
           this.ctx.scale(dpr, dpr);
           
-          // 绘制迷宫
-          this.drawMaze();
+          // 创建离屏Canvas用于缓存迷宫背景
+          this.offscreenCanvas = wx.createOffscreenCanvas({
+            type: '2d',
+            width: this.canvas.width,
+            height: this.canvas.height
+          });
+          this.offscreenCtx = this.offscreenCanvas.getContext('2d');
+          this.offscreenCtx.scale(dpr, dpr);
+          
+          // 初始化绘制
+          this.initDraw();
         }
       });
   },
@@ -97,6 +126,10 @@ Page({
     // 清理计时器
     if (this.timer) {
       clearInterval(this.timer);
+    }
+    // 清理动画
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
     }
     // 保存游戏状态
     this.saveGameState();
@@ -199,23 +232,39 @@ Page({
       solution: []
     });
     
-    // 绘制迷宫
+    // 标记背景需要重新缓存
+    this.backgroundCached = false;
+    this.lastPlayerX = -1;
+    this.lastPlayerY = -1;
+    
+    // 初始化绘制
     if (this.ctx) {
-      this.drawMaze();
+      this.initDraw();
     }
   },
-
-  // 绘制迷宫
-  drawMaze() {
+  
+  // 初始化绘制
+  initDraw() {
     if (!this.ctx) return;
     
-    const { maze, cellSize, playerX, playerY, showHint, solution } = this.data;
-    const ctx = this.ctx;
+    // 缓存背景
+    this.cacheBackground();
     
-    // 清空画布
+    // 绘制完整画面
+    this.render();
+  },
+  
+  // 缓存静态背景（迷宫）
+  cacheBackground() {
+    if (!this.offscreenCtx || this.backgroundCached) return;
+    
+    const { maze, cellSize } = this.data;
+    const ctx = this.offscreenCtx;
+    
+    // 清空离屏画布
     ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
-    // 绘制迷宫
+    // 绘制迷宫背景
     for (let y = 0; y < maze.length; y++) {
       for (let x = 0; x < maze[y].length; x++) {
         const cell = maze[y][x];
@@ -257,8 +306,23 @@ Page({
       }
     }
     
+    this.backgroundCached = true;
+  },
+  
+  // 渲染画面
+  render() {
+    if (!this.ctx || !this.offscreenCanvas) return;
+    
+    const ctx = this.ctx;
+    const { cellSize, playerX, playerY, showHint, solution } = this.data;
+    
+    // 复制背景到主画布
+    ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
+    ctx.drawImage(this.offscreenCanvas, 0, 0, this.data.canvasWidth, this.data.canvasHeight);
+    
     // 绘制提示路径
     if (showHint && solution.length > 0) {
+      ctx.save();
       ctx.strokeStyle = 'rgba(255, 193, 7, 0.5)';
       ctx.lineWidth = cellSize * 0.3;
       ctx.lineCap = 'round';
@@ -277,12 +341,49 @@ Page({
         }
       }
       ctx.stroke();
+      ctx.restore();
     }
     
     // 绘制玩家
+    this.drawPlayer();
+    
+    // 记录玩家位置
+    this.lastPlayerX = playerX;
+    this.lastPlayerY = playerY;
+  },
+  
+  // 绘制玩家
+  drawPlayer() {
+    if (!this.ctx) return;
+    
+    const { cellSize, playerX, playerY } = this.data;
+    const ctx = this.ctx;
+    
+    // 清除上一次玩家位置（从缓存的背景恢复）
+    if (this.lastPlayerX >= 0 && this.lastPlayerY >= 0) {
+      const lastX = this.lastPlayerX * cellSize;
+      const lastY = this.lastPlayerY * cellSize;
+      
+      // 从离屏Canvas恢复该区域
+      if (this.offscreenCanvas) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'copy';
+        ctx.drawImage(
+          this.offscreenCanvas,
+          lastX, lastY, cellSize, cellSize,
+          lastX, lastY, cellSize, cellSize
+        );
+        ctx.restore();
+      }
+    }
+    
+    // 绘制新的玩家位置
     const px = playerX * cellSize + cellSize / 2;
     const py = playerY * cellSize + cellSize / 2;
     
+    ctx.save();
+    
+    // 绘制玩家圆形
     ctx.fillStyle = '#3498DB';
     ctx.beginPath();
     ctx.arc(px, py, cellSize * 0.35, 0, Math.PI * 2);
@@ -294,6 +395,35 @@ Page({
     ctx.arc(px - cellSize * 0.1, py - cellSize * 0.05, cellSize * 0.08, 0, Math.PI * 2);
     ctx.arc(px + cellSize * 0.1, py - cellSize * 0.05, cellSize * 0.08, 0, Math.PI * 2);
     ctx.fill();
+    
+    ctx.restore();
+  },
+
+  // 兼容旧方法名（重定向到render）
+  drawMaze() {
+    this.render();
+  },
+  
+  // 更新玩家位置（优化版）
+  updatePlayerPosition() {
+    if (!this.ctx) return;
+    
+    const { playerX, playerY } = this.data;
+    
+    // 如果位置没有变化，不需要更新
+    if (playerX === this.lastPlayerX && playerY === this.lastPlayerY) {
+      return;
+    }
+    
+    // 使用requestAnimationFrame优化动画
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    
+    this.animationId = requestAnimationFrame(() => {
+      this.render();
+      this.animationId = null;
+    });
   },
 
   // 开始游戏
@@ -356,6 +486,16 @@ Page({
       this.timer = null;
     }
     
+    // 清理动画
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+    }
+    
+    // 重置玩家位置记录
+    this.lastPlayerX = -1;
+    this.lastPlayerY = -1;
+    
     this.generateMaze();
   },
 
@@ -412,8 +552,8 @@ Page({
         this.winGame();
       }
       
-      // 重新绘制
-      this.drawMaze();
+      // 更新玩家位置（优化绘制）
+      this.updatePlayerPosition();
     } else {
       // 撞墙音效
       if (this.data.settings.soundEnabled) {
@@ -485,7 +625,8 @@ Page({
       });
     }
     
-    this.drawMaze();
+    // 重新缓存背景（因为提示路径改变了）
+    this.render();
     
     // 播放音效
     if (this.data.settings.soundEnabled) {

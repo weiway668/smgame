@@ -107,14 +107,14 @@ Page({
           this.canvas.height = this.data.canvasHeight * dpr;
           this.ctx.scale(dpr, dpr);
           
-          // 创建离屏Canvas用于缓存迷宫背景
+          // 创建离屏Canvas用于缓存迷宫背景（使用逻辑尺寸，不是物理尺寸）
           this.offscreenCanvas = wx.createOffscreenCanvas({
             type: '2d',
-            width: this.canvas.width,
-            height: this.canvas.height
+            width: this.data.canvasWidth,
+            height: this.data.canvasHeight
           });
           this.offscreenCtx = this.offscreenCanvas.getContext('2d');
-          this.offscreenCtx.scale(dpr, dpr);
+          // 离屏Canvas不需要DPR缩放，保持逻辑坐标系
           
           // 初始化绘制
           this.initDraw();
@@ -139,7 +139,8 @@ Page({
   initCanvas() {
     const systemInfo = wx.getSystemInfoSync();
     const screenWidth = systemInfo.windowWidth;
-    const canvasSize = Math.min(screenWidth - 40, 400);
+    // 减少边距，增大画布尺寸
+    const canvasSize = Math.min(screenWidth - 30, 350);
     
     this.setData({
       canvasWidth: canvasSize,
@@ -315,13 +316,12 @@ Page({
     
     const ctx = this.ctx;
     const { cellSize, playerX, playerY, showHint, solution } = this.data;
-    const dpr = wx.getSystemInfoSync().pixelRatio;
     
-    // 复制背景到主画布（考虑DPR）
+    // 复制背景到主画布（离屏Canvas已经是逻辑尺寸）
     ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     ctx.drawImage(
       this.offscreenCanvas, 
-      0, 0, this.data.canvasWidth * dpr, this.data.canvasHeight * dpr,  // 源区域
+      0, 0, this.data.canvasWidth, this.data.canvasHeight,  // 源区域
       0, 0, this.data.canvasWidth, this.data.canvasHeight  // 目标区域
     );
     
@@ -363,21 +363,20 @@ Page({
     
     const { cellSize, playerX, playerY } = this.data;
     const ctx = this.ctx;
-    const dpr = wx.getSystemInfoSync().pixelRatio;
     
     // 清除上一次玩家位置（从缓存的背景恢复）
     if (this.lastPlayerX >= 0 && this.lastPlayerY >= 0 && this.offscreenCanvas) {
       const lastX = this.lastPlayerX * cellSize;
       const lastY = this.lastPlayerY * cellSize;
       
-      // 从离屏Canvas恢复该区域，注意DPR缩放
+      // 从离屏Canvas恢复该区域（离屏Canvas是逻辑尺寸）
       ctx.save();
       // 清除旧位置
       ctx.clearRect(lastX, lastY, cellSize, cellSize);
       // 从离屏Canvas复制背景
       ctx.drawImage(
         this.offscreenCanvas,
-        lastX * dpr, lastY * dpr, cellSize * dpr, cellSize * dpr,  // 源区域（考虑DPR）
+        lastX, lastY, cellSize, cellSize,  // 源区域
         lastX, lastY, cellSize, cellSize  // 目标区域
       );
       ctx.restore();
@@ -436,8 +435,12 @@ Page({
     ctx.save();
     ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
-    // 直接绘制离屏Canvas内容
-    ctx.drawImage(this.offscreenCanvas, 0, 0);
+    // 直接绘制离屏Canvas内容（指定完整的源和目标尺寸）
+    ctx.drawImage(
+      this.offscreenCanvas, 
+      0, 0, this.data.canvasWidth, this.data.canvasHeight,
+      0, 0, this.data.canvasWidth, this.data.canvasHeight
+    );
     
     // 绘制提示路径
     if (showHint && solution.length > 0) {

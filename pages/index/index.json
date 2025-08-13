@@ -1,0 +1,9 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "小梦想游戏",
+  "navigationBarBackgroundColor": "#1E90FF",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#F0F8FF",
+  "backgroundTextStyle": "light",
+  "enablePullDownRefresh": false
+}

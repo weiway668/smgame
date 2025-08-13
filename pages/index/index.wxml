@@ -1,0 +1,113 @@
+<!--pages/index/index.wxml-->
+<!-- 小梦想游戏 - 主页 -->
+
+<view class="container {{animationClass}}">
+  <!-- 顶部Logo和标题 -->
+  <view class="header">
+    <view class="logo bounce">
+      <text class="logo-icon">🎮</text>
+    </view>
+    <view class="app-title">
+      <text class="title-main">小梦想游戏</text>
+      <text class="title-sub">让快乐更简单</text>
+    </view>
+  </view>
+
+  <!-- 游戏列表 -->
+  <view class="games-container">
+    <view class="games-grid">
+      <view 
+        wx:for="{{games}}" 
+        wx:key="id"
+        class="game-card"
+        data-path="{{item.path}}"
+        bindtap="enterGame"
+      >
+        <view class="game-card-inner" style="background: linear-gradient(135deg, {{item.color}}, {{item.color}}aa);">
+          <view class="game-icon">
+            <text>{{item.icon}}</text>
+          </view>
+          <view class="game-info">
+            <text class="game-name">{{item.name}}</text>
+            <text class="game-desc">{{item.desc}}</text>
+          </view>
+          <view class="game-arrow">
+            <text>→</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="footer">
+    <view class="footer-buttons">
+      <button class="btn-setting" bindtap="showSettingsModal">
+        <text class="setting-icon">⚙️</text>
+        <text class="setting-text">设置</text>
+      </button>
+    </view>
+    <view class="version">
+      <text>版本 V1.0.0</text>
+    </view>
+  </view>
+</view>
+
+<!-- 设置弹窗 -->
+<view wx:if="{{showSettings}}" class="modal-overlay" bindtap="hideSettingsModal">
+  <view class="modal-content" catchtap>
+    <view class="modal-header">
+      <text class="modal-title">游戏设置</text>
+      <view class="modal-close" bindtap="hideSettingsModal">
+        <text>×</text>
+      </view>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 音效设置 -->
+      <view class="setting-item">
+        <view class="setting-label">
+          <text class="setting-icon">🔊</text>
+          <text>音效</text>
+        </view>
+        <switch 
+          checked="{{settings.soundEnabled}}" 
+          bindchange="toggleSound"
+          color="#1E90FF"
+        />
+      </view>
+      
+      <!-- 音乐设置 -->
+      <view class="setting-item">
+        <view class="setting-label">
+          <text class="setting-icon">🎵</text>
+          <text>背景音乐</text>
+        </view>
+        <switch 
+          checked="{{settings.musicEnabled}}" 
+          bindchange="toggleMusic"
+          color="#1E90FF"
+        />
+      </view>
+      
+      <!-- 震动设置 -->
+      <view class="setting-item">
+        <view class="setting-label">
+          <text class="setting-icon">📳</text>
+          <text>震动反馈</text>
+        </view>
+        <switch 
+          checked="{{settings.vibrationEnabled}}" 
+          bindchange="toggleVibration"
+          color="#1E90FF"
+        />
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="btn btn-primary" bindtap="hideSettingsModal">
+        确定
+      </button>
+    </view>
+  </view>
+</view>

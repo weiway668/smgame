@@ -1,0 +1,9 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "消消乐",
+  "navigationBarBackgroundColor": "#FF9800",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#FFE082",
+  "backgroundTextStyle": "light",
+  "disableScroll": true
+}

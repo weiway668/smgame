@@ -1,0 +1,292 @@
+/**app.wxss**/
+/* 小梦想游戏 - 全局样式 */
+
+/* 颜色变量定义 */
+page {
+  --primary-color: #1E90FF;  /* 道奇蓝 */
+  --secondary-color: #87CEEB; /* 天蓝色 */
+  --background-color: #F0F8FF; /* 爱丽丝蓝 */
+  --success-color: #32C832;
+  --warning-color: #FFA500;
+  --error-color: #FF4444;
+  --gold-color: #FFD700;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --border-color: #E0E0E0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* 全局设置 */
+  height: 100%;
+  background: linear-gradient(180deg, var(--secondary-color) 0%, var(--background-color) 100%);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+/* 容器类 */
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 20rpx;
+}
+
+/* 卡片样式 */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 24rpx;
+  margin: 16rpx;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.card:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px var(--shadow-color);
+}
+
+/* 按钮样式 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+}
+
+.btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 2px var(--shadow-color);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--primary-color);
+  border: 2rpx solid var(--primary-color);
+}
+
+.btn-success {
+  background: var(--success-color);
+  color: white;
+}
+
+.btn-warning {
+  background: var(--warning-color);
+  color: white;
+}
+
+/* 标题样式 */
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin: 20rpx 0;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 16rpx 0;
+}
+
+.caption {
+  font-size: 14px;
+  color: var(--text-light);
+  margin: 8rpx 0;
+}
+
+/* 游戏卡片 */
+.game-card {
+  width: 320rpx;
+  height: 400rpx;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.game-card:hover {
+  transform: translateY(-8rpx);
+  box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.game-card-image {
+  width: 100%;
+  height: 240rpx;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.game-card-content {
+  padding: 20rpx;
+}
+
+.game-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.game-card-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 分数板样式 */
+.score-board {
+  background: linear-gradient(135deg, var(--gold-color), #FFC700);
+  color: white;
+  padding: 16rpx 32rpx;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+}
+
+/* 动画类 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20rpx);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.pulse {
+  animation: pulse 2s ease infinite;
+}
+
+.rotate {
+  animation: rotate 2s linear infinite;
+}
+
+.bounce {
+  animation: bounce 1s ease infinite;
+}
+
+/* 工具类 */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  justify-content: space-between;
+}
+
+.flex-around {
+  justify-content: space-around;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.mt-10 {
+  margin-top: 10rpx;
+}
+
+.mt-20 {
+  margin-top: 20rpx;
+}
+
+.mb-10 {
+  margin-bottom: 10rpx;
+}
+
+.mb-20 {
+  margin-bottom: 20rpx;
+}
+
+.p-10 {
+  padding: 10rpx;
+}
+
+.p-20 {
+  padding: 20rpx;
+}
+
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* 安全区域适配 */
+.safe-area-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}

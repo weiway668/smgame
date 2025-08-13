@@ -1,0 +1,131 @@
+<!--pages/match3/match3.wxml-->
+<!-- 消消乐游戏页面 -->
+
+<view class="container">
+  <!-- 游戏头部 -->
+  <view class="game-header">
+    <view class="header-left">
+      <view class="back-btn" bindtap="backToHome">
+        <text>←</text>
+      </view>
+    </view>
+    <view class="header-center">
+      <text class="game-title">消消乐</text>
+    </view>
+    <view class="header-right">
+      <view class="mode-badge {{gameMode}}">
+        <text>{{gameMode === 'survival' ? '生存' : '经典'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏统计 -->
+  <view class="game-stats">
+    <view class="stat-item">
+      <text class="stat-label">得分</text>
+      <text class="stat-value">{{score}}</text>
+      <text class="stat-best" wx:if="{{highScore > 0}}">最高: {{highScore}}</text>
+    </view>
+    
+    <view class="stat-item">
+      <text class="stat-label">连击</text>
+      <text class="stat-value combo-{{combo >= 8 ? 'super' : combo >= 5 ? 'hot' : combo >= 3 ? 'warm' : 'normal'}}">
+        {{combo}}
+      </text>
+      <text class="combo-status">{{comboStatus}}</text>
+    </view>
+    
+    <view class="stat-item" wx:if="{{gameMode === 'survival'}}">
+      <text class="stat-label">威胁</text>
+      <view class="threat-bar">
+        <view class="threat-fill" style="width: {{threatLevel}}%;"></view>
+      </view>
+      <text class="stat-best">Lv.{{survivalLevel}}</text>
+    </view>
+  </view>
+
+  <!-- 游戏画布 -->
+  <view class="game-canvas-wrapper">
+    <canvas 
+      type="2d"
+      id="match3Canvas"
+      class="game-canvas"
+      style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+      bindtouchstart="touchStart"
+      bindtouchmove="touchMove"
+      bindtouchend="touchEnd"
+    ></canvas>
+    
+    <!-- 得分弹出 -->
+    <view class="score-popups">
+      <text 
+        wx:for="{{scorePopups}}" 
+        wx:key="index"
+        class="score-popup"
+        style="left: {{item.x}}px; top: {{item.y}}px; opacity: {{item.opacity}};"
+      >
+        +{{item.points}}
+      </text>
+    </view>
+    
+    <!-- 游戏状态覆盖层 -->
+    <view class="game-overlay" wx:if="{{gameStatus === 'ready'}}">
+      <view class="overlay-content">
+        <text class="overlay-title">准备开始</text>
+        <text class="overlay-desc">交换相邻方块，3个或以上相同颜色消除</text>
+        <button class="btn-start" bindtap="startGame">开始游戏</button>
+      </view>
+    </view>
+    
+    <view class="game-overlay" wx:if="{{gameStatus === 'paused'}}">
+      <view class="overlay-content">
+        <text class="overlay-title">游戏暂停</text>
+        <button class="btn-resume" bindtap="resumeGame">继续游戏</button>
+        <button class="btn-restart" bindtap="restartGame">重新开始</button>
+      </view>
+    </view>
+    
+    <view class="game-overlay" wx:if="{{gameStatus === 'gameover'}}">
+      <view class="overlay-content">
+        <text class="overlay-title">游戏结束</text>
+        <view class="game-result">
+          <text class="result-score">得分: {{score}}</text>
+          <text class="result-combo">最大连击: {{maxCombo}}</text>
+          <text class="result-time">用时: {{formatTime(totalTime)}}</text>
+        </view>
+        <button class="btn-restart" bindtap="restartGame">再来一局</button>
+        <button class="btn-home" bindtap="backToHome">返回主页</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作面板 -->
+  <view class="control-panel">
+    <view class="game-info">
+      <view class="info-item">
+        <text class="info-label">移动次数</text>
+        <text class="info-value">{{totalMoves}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">游戏时间</text>
+        <text class="info-value">{{totalTime}}秒</text>
+      </view>
+    </view>
+    
+    <view class="action-buttons">
+      <button 
+        class="action-btn {{gameStatus === 'playing' ? '' : 'disabled'}}"
+        bindtap="{{gameStatus === 'playing' ? 'pauseGame' : ''}}"
+        disabled="{{gameStatus !== 'playing'}}"
+      >
+        <text>{{gameStatus === 'playing' ? '暂停' : gameStatus === 'paused' ? '已暂停' : '未开始'}}</text>
+      </button>
+      <button 
+        class="action-btn"
+        bindtap="restartGame"
+      >
+        <text>重玩</text>
+      </button>
+    </view>
+  </view>
+</view>

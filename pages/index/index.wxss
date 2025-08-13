@@ -1,0 +1,297 @@
+/* pages/index/index.wxss */
+/* 小梦想游戏 - 主页样式 */
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #87CEEB 0%, #F0F8FF 50%, #E6F3FF 100%);
+  padding: 0;
+}
+
+/* 头部区域 */
+.header {
+  padding: 60rpx 0 40rpx;
+  text-align: center;
+}
+
+.logo {
+  display: inline-block;
+  margin-bottom: 20rpx;
+}
+
+.logo-icon {
+  font-size: 80rpx;
+  display: block;
+}
+
+.app-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-main {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #1E90FF;
+  margin-bottom: 10rpx;
+  text-shadow: 2rpx 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.title-sub {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 300;
+}
+
+/* 游戏容器 */
+.games-container {
+  flex: 1;
+  padding: 20rpx;
+}
+
+.games-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  max-width: 700rpx;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* 游戏卡片 */
+.game-card {
+  width: 100%;
+  height: 180rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0);
+}
+
+.game-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+}
+
+.game-card-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 40rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card-inner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.game-icon {
+  font-size: 60rpx;
+  margin-right: 30rpx;
+  filter: drop-shadow(2rpx 2rpx 4rpx rgba(0, 0, 0, 0.2));
+}
+
+.game-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 8rpx;
+  text-shadow: 2rpx 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.game-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 1rpx 1rpx 2rpx rgba(0, 0, 0, 0.2);
+}
+
+.game-arrow {
+  font-size: 40rpx;
+  color: white;
+  opacity: 0.8;
+  margin-left: 20rpx;
+}
+
+/* 底部区域 */
+.footer {
+  padding: 40rpx 20rpx;
+  padding-bottom: calc(40rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.footer-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.btn-setting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50rpx;
+  padding: 20rpx 60rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 32rpx;
+}
+
+.btn-setting:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
+}
+
+.setting-icon {
+  font-size: 36rpx;
+  margin-right: 10rpx;
+}
+
+.setting-text {
+  color: #333;
+  font-weight: 500;
+}
+
+.version {
+  text-align: center;
+  color: #999;
+  font-size: 24rpx;
+}
+
+/* 设置弹窗 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  width: 80%;
+  max-width: 600rpx;
+  background: white;
+  border-radius: 24rpx;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  background: linear-gradient(135deg, #1E90FF, #87CEEB);
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+}
+
+.modal-close {
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: white;
+  font-size: 40rpx;
+  font-weight: 300;
+}
+
+.modal-body {
+  padding: 40rpx;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-label {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.setting-label .setting-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+}
+
+.modal-footer {
+  padding: 20rpx 40rpx 30rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-footer .btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #1E90FF, #87CEEB);
+  border: none;
+}
+
+/* 动画 */
+@keyframes slideUp {
+  from {
+    transform: translateY(100rpx);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -4,7 +4,8 @@
       "Bash(git init:*)",
       "Bash(git add:*)",
       "Bash(git branch:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

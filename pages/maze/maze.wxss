@@ -10,95 +10,96 @@
   overflow: hidden;
 }
 
-/* 游戏头部 */
-.game-header {
+/* 紧凑型游戏头部 */
+.game-header-compact {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20rpx 30rpx;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  padding: 12rpx 20rpx;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  height: 60rpx;
 }
 
-.header-left, .header-right {
-  flex: 0 0 auto;
+.back-btn-compact {
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #4CAF50, #388E3C);
+  color: white;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  box-shadow: 0 2rpx 6rpx rgba(76, 175, 80, 0.3);
 }
 
-.header-center {
+.game-title-compact {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2E7D32;
   flex: 1;
   text-align: center;
 }
 
-.back-btn {
-  width: 60rpx;
-  height: 60rpx;
+.difficulty-selector-compact {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #4CAF50;
+  padding: 8rpx 16rpx;
+  background: linear-gradient(145deg, #4CAF50, #388E3C);
   color: white;
-  border-radius: 50%;
-  font-size: 32rpx;
-  font-weight: bold;
-  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.3);
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  height: 50rpx;
 }
 
-.game-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #2E7D32;
+.difficulty-selector-compact .arrow {
+  margin-left: 8rpx;
+  font-size: 18rpx;
 }
 
-.difficulty-selector {
+/* 悬浮统计信息 */
+.floating-stats {
+  position: absolute;
+  top: 20rpx;
+  left: 20rpx;
+  right: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.floating-stat-item {
   display: flex;
   align-items: center;
-  padding: 10rpx 20rpx;
-  background: #4CAF50;
-  color: white;
-  border-radius: 20rpx;
-  font-size: 28rpx;
-}
-
-.difficulty-selector .arrow {
-  margin-left: 10rpx;
-  font-size: 20rpx;
-}
-
-/* 游戏统计 */
-.game-stats {
-  display: flex;
-  justify-content: space-around;
-  padding: 16rpx 20rpx;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
-  margin: 16rpx 20rpx;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08),
-              inset 0 1rpx 0 rgba(255, 255, 255, 1);
+  gap: 8rpx;
+  padding: 12rpx 20rpx;
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.floating-stat-item.left {
+  margin-right: auto;
 }
 
-.stat-label {
+.floating-stat-item.right {
+  margin-left: auto;
+}
+
+.stat-icon {
   font-size: 24rpx;
-  color: #666;
-  margin-bottom: 8rpx;
+  filter: grayscale(0%);
 }
 
-.stat-value {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #4CAF50;
-  margin-bottom: 4rpx;
-}
-
-.stat-best {
-  font-size: 20rpx;
-  color: #999;
+.floating-stat-item .stat-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
 }
 
 /* 游戏画布区域 */
@@ -181,18 +182,28 @@
   backdrop-filter: blur(10px);
 }
 
-/* 方向控制器 */
+/* 方向控制器（增大间距） */
 .direction-controller {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
+  padding: 10rpx;
 }
 
 .direction-row {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.direction-row.middle {
+  margin: 10rpx 0;
+}
+
+.direction-spacer {
+  width: 20rpx;
+  height: 100rpx;
 }
 
 .direction-btn {
@@ -203,75 +214,103 @@
   justify-content: center;
   background: linear-gradient(145deg, #4CAF50, #388E3C);
   color: white;
-  border-radius: 20rpx;
-  margin: 6rpx;
-  font-size: 48rpx;
+  border-radius: 24rpx;
+  margin: 0 20rpx;
+  font-size: 50rpx;
   font-weight: bold;
-  box-shadow: 0 6rpx 16rpx rgba(76, 175, 80, 0.4),
-              inset 0 -2rpx 0 rgba(0, 0, 0, 0.1);
-  transition: all 0.15s ease;
+  box-shadow: 0 8rpx 20rpx rgba(76, 175, 80, 0.35),
+              inset 0 -3rpx 0 rgba(0, 0, 0, 0.15);
+  transition: all 0.1s ease;
   position: relative;
+  /* 扩大触控区域 */
+  padding: 10rpx;
+  margin: -10rpx 10rpx;
 }
 
 .direction-btn::after {
   content: '';
   position: absolute;
-  top: 2rpx;
-  left: 2rpx;
-  right: 2rpx;
-  bottom: 2rpx;
-  border-radius: 18rpx;
-  background: linear-gradient(145deg, rgba(255,255,255,0.2), transparent);
+  top: 3rpx;
+  left: 3rpx;
+  right: 3rpx;
+  bottom: 3rpx;
+  border-radius: 21rpx;
+  background: linear-gradient(145deg, rgba(255,255,255,0.25), transparent);
   pointer-events: none;
 }
 
-.direction-btn:active {
-  transform: scale(0.92) translateY(2rpx);
-  box-shadow: 0 3rpx 8rpx rgba(76, 175, 80, 0.3),
-              inset 0 -1rpx 0 rgba(0, 0, 0, 0.1);
+/* 按压效果增强 */
+.direction-btn-hover {
+  transform: scale(0.85) translateY(3rpx);
+  background: linear-gradient(145deg, #388E3C, #2E7D32);
+  box-shadow: 0 4rpx 10rpx rgba(76, 175, 80, 0.25),
+              inset 0 -2rpx 0 rgba(0, 0, 0, 0.2);
 }
 
 .direction-center {
-  width: 100rpx;
+  width: 120rpx;
   height: 100rpx;
-  margin: 6rpx;
+  margin: 0 10rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
-/* 中心圆点指示器 */
-.direction-center::after {
-  content: '';
-  width: 30rpx;
-  height: 30rpx;
-  background: radial-gradient(circle, #4CAF50, #388E3C);
+/* 中心装饰点 */
+.center-dot {
+  width: 40rpx;
+  height: 40rpx;
+  background: radial-gradient(circle, #81C784, #4CAF50);
   border-radius: 50%;
-  box-shadow: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4rpx 8rpx rgba(76, 175, 80, 0.3),
+              inset 0 -2rpx 4rpx rgba(0, 0, 0, 0.2);
+  animation: pulse-dot 3s ease-in-out infinite;
 }
 
-/* 操作按钮 */
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+/* 图标化操作按钮 */
 .action-buttons {
   display: flex;
   justify-content: space-between;
-  padding: 0 30rpx;
-  gap: 20rpx;
+  padding: 0 40rpx;
+  gap: 30rpx;
 }
 
-.action-btn {
+.action-btn.icon-btn {
   flex: 1;
-  padding: 20rpx 0;
-  background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  padding: 24rpx 0;
+  background: linear-gradient(145deg, #ffffff, #f8f8f8);
   border: 2rpx solid #4CAF50;
-  color: #4CAF50;
-  border-radius: 16rpx;
-  font-size: 30rpx;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.08),
-              inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  transition: all 0.15s ease;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.08),
+              inset 0 1rpx 0 rgba(255, 255, 255, 1);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+}
+
+.btn-icon {
+  font-size: 36rpx;
+  line-height: 1;
+  color: #4CAF50;
+  transition: transform 0.2s ease;
+}
+
+.btn-tooltip {
+  font-size: 20rpx;
+  color: #666;
+  opacity: 0.8;
+  font-weight: 500;
 }
 
 .action-btn::before {
@@ -294,12 +333,50 @@
               inset 0 -1rpx 0 rgba(0, 0, 0, 0.2);
 }
 
-.action-btn.active {
+.action-btn.icon-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.1),
+              inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+}
+
+.action-btn.icon-btn:active .btn-icon {
+  transform: scale(0.9);
+}
+
+.action-btn.icon-btn.active {
   background: linear-gradient(145deg, #4CAF50, #388E3C);
-  color: white;
   border-color: #388E3C;
-  box-shadow: 0 4rpx 8rpx rgba(76, 175, 80, 0.3),
-              inset 0 1rpx 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4rpx 10rpx rgba(76, 175, 80, 0.3),
+              inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+}
+
+.action-btn.icon-btn.active .btn-icon {
+  color: white;
+  transform: scale(1.1);
+}
+
+.action-btn.icon-btn.active .btn-tooltip {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.action-btn.icon-btn.disabled {
+  opacity: 0.4;
+  background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+  border-color: #ddd;
+  box-shadow: none;
+}
+
+.action-btn.icon-btn.disabled .btn-icon {
+  color: #999;
+}
+
+.action-btn.icon-btn.disabled .btn-tooltip {
+  color: #999;
+}
+
+.action-btn.icon-btn.disabled:active {
+  transform: none;
+  background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
 }
 
 .action-btn.active::before {

@@ -37,6 +37,9 @@ Page({
     showHint: false,
     solution: [],
     
+    // 路径痕迹
+    visitedCells: [],
+    
     // 难度选择
     difficulties: [
       { value: 'easy', label: '简单', size: 11 },
@@ -71,6 +74,7 @@ Page({
   animationId: null,
   lastPlayerX: -1,
   lastPlayerY: -1,
+  animationFrame: 0,
 
   onLoad(options) {
     console.log('迷宫游戏加载');
@@ -118,6 +122,9 @@ Page({
           
           // 初始化绘制
           this.initDraw();
+          
+          // 启动动画循环
+          this.startAnimationLoop();
         }
       });
   },
@@ -131,6 +138,8 @@ Page({
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
     }
+    // 停止动画循环
+    this.stopAnimationLoop();
     // 保存游戏状态
     this.saveGameState();
   },
@@ -230,7 +239,8 @@ Page({
       time: 0,
       gameStatus: 'ready',
       showHint: false,
-      solution: []
+      solution: [],
+      visitedCells: [] // 重置路径痕迹
     });
     
     // 标记背景需要重新缓存
@@ -265,8 +275,8 @@ Page({
     // 清空离屏画布
     ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
-    // 先填充整个画布背景
-    ctx.fillStyle = '#2C3E50';
+    // 先填充整个画布背景 - 更深的墙壁颜色
+    ctx.fillStyle = '#1A252F';
     ctx.fillRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
     // 绘制迷宫
@@ -277,35 +287,53 @@ Page({
         const py = y * cellSize;
         
         if (cell === 1) {
-          // 墙壁 - 深色
-          ctx.fillStyle = '#2C3E50';
+          // 墙壁 - 更深的颜色
+          ctx.fillStyle = '#1A252F';
           ctx.fillRect(px, py, cellSize, cellSize);
+          // 添加内阴影效果
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(px + 0.5, py + 0.5, cellSize - 1, cellSize - 1);
         } else if (cell === 0) {
-          // 路径 - 浅色
-          ctx.fillStyle = '#ECF0F1';
+          // 路径 - 纯白色
+          ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(px, py, cellSize, cellSize);
         } else if (cell === 2) {
-          // 起点 - 绿色
-          ctx.fillStyle = '#27AE60';
+          // 起点 - 绿色带渐变
+          const gradient = ctx.createRadialGradient(
+            px + cellSize / 2, py + cellSize / 2, 0,
+            px + cellSize / 2, py + cellSize / 2, cellSize / 2
+          );
+          gradient.addColorStop(0, '#4CAF50');
+          gradient.addColorStop(1, '#27AE60');
+          ctx.fillStyle = gradient;
           ctx.fillRect(px, py, cellSize, cellSize);
+          
           ctx.fillStyle = 'white';
-          ctx.font = `${Math.floor(cellSize * 0.5)}px Arial`;
+          ctx.font = `bold ${Math.floor(cellSize * 0.5)}px Arial`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('S', px + cellSize / 2, py + cellSize / 2);
         } else if (cell === 3) {
-          // 终点 - 红色
-          ctx.fillStyle = '#E74C3C';
+          // 终点 - 红色带渐变
+          const gradient = ctx.createRadialGradient(
+            px + cellSize / 2, py + cellSize / 2, 0,
+            px + cellSize / 2, py + cellSize / 2, cellSize / 2
+          );
+          gradient.addColorStop(0, '#FF5252');
+          gradient.addColorStop(1, '#E74C3C');
+          ctx.fillStyle = gradient;
           ctx.fillRect(px, py, cellSize, cellSize);
+          
           ctx.fillStyle = 'white';
-          ctx.font = `${Math.floor(cellSize * 0.5)}px Arial`;
+          ctx.font = `bold ${Math.floor(cellSize * 0.5)}px Arial`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('E', px + cellSize / 2, py + cellSize / 2);
         }
         
         // 绘制细网格线
-        ctx.strokeStyle = 'rgba(189, 195, 199, 0.3)';
+        ctx.strokeStyle = 'rgba(189, 195, 199, 0.2)';
         ctx.lineWidth = 0.5;
         ctx.strokeRect(px, py, cellSize, cellSize);
       }
@@ -433,12 +461,12 @@ Page({
     if (!this.ctx || !this.offscreenCanvas) return;
     
     const ctx = this.ctx;
-    const { cellSize, playerX, playerY, showHint, solution } = this.data;
+    const { cellSize, playerX, playerY, showHint, solution, visitedCells, maze } = this.data;
     
     // 完整复制背景
     ctx.save();
     // 先用墙壁颜色填充整个画布，防止出现白边
-    ctx.fillStyle = '#2C3E50';
+    ctx.fillStyle = '#1A252F';
     ctx.fillRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
     // 绘制离屏Canvas内容
@@ -447,6 +475,20 @@ Page({
       0, 0, this.data.canvasWidth, this.data.canvasHeight,
       0, 0, this.data.canvasWidth, this.data.canvasHeight
     );
+    
+    // 绘制路径痕迹
+    if (visitedCells && visitedCells.length > 0) {
+      ctx.fillStyle = 'rgba(52, 152, 219, 0.15)';
+      visitedCells.forEach(([x, y]) => {
+        // 不绘制起点和终点的痕迹
+        if (maze[y][x] === 0) {
+          ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+      });
+    }
+    
+    // 绘制起点和终点的动画效果
+    this.drawAnimatedMarkers();
     
     // 绘制提示路径
     if (showHint && solution.length > 0) {
@@ -491,6 +533,47 @@ Page({
     // 记录位置
     this.lastPlayerX = playerX;
     this.lastPlayerY = playerY;
+  },
+  
+  // 绘制动画标记（起点/终点）
+  drawAnimatedMarkers() {
+    if (!this.ctx) return;
+    
+    const ctx = this.ctx;
+    const { maze, cellSize } = this.data;
+    
+    // 更新动画帧
+    this.animationFrame = (this.animationFrame || 0) + 1;
+    const pulse = Math.sin(this.animationFrame * 0.05) * 0.3 + 0.7;
+    
+    // 绘制起点和终点的光晕效果
+    for (let y = 0; y < maze.length; y++) {
+      for (let x = 0; x < maze[y].length; x++) {
+        const cell = maze[y][x];
+        const px = x * cellSize + cellSize / 2;
+        const py = y * cellSize + cellSize / 2;
+        
+        if (cell === 2) {
+          // 起点脉冲光效
+          ctx.save();
+          ctx.globalAlpha = pulse * 0.3;
+          ctx.fillStyle = '#4CAF50';
+          ctx.beginPath();
+          ctx.arc(px, py, cellSize * 0.7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (cell === 3) {
+          // 终点呼吸灯效果
+          ctx.save();
+          ctx.globalAlpha = (1 - pulse) * 0.4;
+          ctx.fillStyle = '#E74C3C';
+          ctx.beginPath();
+          ctx.arc(px, py, cellSize * 0.7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+    }
   },
 
   // 开始游戏
@@ -598,10 +681,25 @@ Page({
     
     // 检查是否可以移动
     if (this.mazeGenerator.isValidMove(newX, newY)) {
+      // 记录走过的路径
+      const visitedCells = this.data.visitedCells || [];
+      // 检查是否已经访问过
+      const cellKey = `${newX},${newY}`;
+      const visited = visitedCells.some(([x, y]) => x === newX && y === newY);
+      
+      if (!visited) {
+        visitedCells.push([newX, newY]);
+        // 限制最大长度
+        if (visitedCells.length > 200) {
+          visitedCells.shift();
+        }
+      }
+      
       this.setData({
         playerX: newX,
         playerY: newY,
-        steps: this.data.steps + 1
+        steps: this.data.steps + 1,
+        visitedCells: visitedCells
       });
       
       // 播放移动音效
@@ -650,19 +748,22 @@ Page({
     const deltaX = touchEndX - this.touchStartX;
     const deltaY = touchEndY - this.touchStartY;
     
+    // 降低滑动阈值，提高灵敏度
+    const threshold = 20;
+    
     // 判断滑动方向
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
       // 水平滑动
-      if (deltaX > 30) {
+      if (deltaX > threshold) {
         this.movePlayer('right');
-      } else if (deltaX < -30) {
+      } else if (deltaX < -threshold) {
         this.movePlayer('left');
       }
     } else {
       // 垂直滑动
-      if (deltaY > 30) {
+      if (deltaY > threshold) {
         this.movePlayer('down');
-      } else if (deltaY < -30) {
+      } else if (deltaY < -threshold) {
         this.movePlayer('up');
       }
     }
@@ -804,5 +905,27 @@ Page({
       path: '/pages/maze/maze',
       imageUrl: '/assets/images/maze-share.png'
     };
+  },
+  
+  // 启动动画循环
+  startAnimationLoop() {
+    const animate = () => {
+      if (this.ctx) {
+        // 只在需要时更新动画标记
+        if (this.data.gameStatus === 'playing' || this.data.gameStatus === 'ready') {
+          this.renderSimple();
+        }
+      }
+      this.animationId = requestAnimationFrame(animate);
+    };
+    animate();
+  },
+  
+  // 停止动画循环
+  stopAnimationLoop() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+    }
   }
 });

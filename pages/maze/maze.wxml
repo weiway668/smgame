@@ -2,44 +2,24 @@
 <!-- 迷宫游戏页面 -->
 
 <view class="container">
-  <!-- 游戏头部 -->
-  <view class="game-header">
-    <view class="header-left">
-      <view class="back-btn" bindtap="backToHome">
-        <text>←</text>
+  <!-- 紧凑型游戏头部 -->
+  <view class="game-header-compact">
+    <view class="back-btn-compact" bindtap="backToHome">
+      <text>←</text>
+    </view>
+    <text class="game-title-compact">走迷宫</text>
+    <picker 
+      mode="selector"
+      range="{{difficulties}}"
+      range-key="label"
+      value="{{difficulty === 'easy' ? 0 : difficulty === 'medium' ? 1 : 2}}"
+      bindchange="changeDifficulty"
+    >
+      <view class="difficulty-selector-compact">
+        <text>{{difficulties[difficulty === 'easy' ? 0 : difficulty === 'medium' ? 1 : 2].label}}</text>
+        <text class="arrow">▼</text>
       </view>
-    </view>
-    <view class="header-center">
-      <text class="game-title">走迷宫</text>
-    </view>
-    <view class="header-right">
-      <picker 
-        mode="selector"
-        range="{{difficulties}}"
-        range-key="label"
-        value="{{difficulty === 'easy' ? 0 : difficulty === 'medium' ? 1 : 2}}"
-        bindchange="changeDifficulty"
-      >
-        <view class="difficulty-selector">
-          <text>{{difficulties[difficulty === 'easy' ? 0 : difficulty === 'medium' ? 1 : 2].label}}</text>
-          <text class="arrow">▼</text>
-        </view>
-      </picker>
-    </view>
-  </view>
-
-  <!-- 游戏统计 -->
-  <view class="game-stats">
-    <view class="stat-item">
-      <text class="stat-label">步数</text>
-      <text class="stat-value">{{steps}}</text>
-      <text class="stat-best" wx:if="{{bestSteps}}">最佳: {{bestSteps}}</text>
-    </view>
-    <view class="stat-item">
-      <text class="stat-label">时间</text>
-      <text class="stat-value">{{time}}秒</text>
-      <text class="stat-best" wx:if="{{bestTime}}">最佳: {{bestTime}}秒</text>
-    </view>
+    </picker>
   </view>
 
   <!-- 游戏画布 -->
@@ -52,6 +32,18 @@
       bindtouchstart="touchStart"
       bindtouchend="touchEnd"
     ></canvas>
+    
+    <!-- 悬浮统计信息 -->
+    <view class="floating-stats">
+      <view class="floating-stat-item left">
+        <text class="stat-icon">👣</text>
+        <text class="stat-value">{{steps}}</text>
+      </view>
+      <view class="floating-stat-item right">
+        <text class="stat-icon">⏱</text>
+        <text class="stat-value">{{time}}s</text>
+      </view>
+    </view>
     
     <!-- 游戏状态覆盖层 -->
     <view class="game-overlay" wx:if="{{gameStatus === 'ready'}}">
@@ -73,65 +65,82 @@
 
   <!-- 控制面板 -->
   <view class="control-panel">
-    <!-- 方向控制器 -->
+    <!-- 方向控制器（增大间距） -->
     <view class="direction-controller">
       <view class="direction-row">
+        <view class="direction-spacer"></view>
         <view 
           class="direction-btn up"
           data-direction="up"
           bindtap="onDirectionTap"
+          hover-class="direction-btn-hover"
+          hover-stay-time="50"
         >
           <text>↑</text>
         </view>
+        <view class="direction-spacer"></view>
       </view>
-      <view class="direction-row">
+      <view class="direction-row middle">
         <view 
           class="direction-btn left"
           data-direction="left"
           bindtap="onDirectionTap"
+          hover-class="direction-btn-hover"
+          hover-stay-time="50"
         >
           <text>←</text>
         </view>
-        <view class="direction-center"></view>
+        <view class="direction-center">
+          <view class="center-dot"></view>
+        </view>
         <view 
           class="direction-btn right"
           data-direction="right"
           bindtap="onDirectionTap"
+          hover-class="direction-btn-hover"
+          hover-stay-time="50"
         >
           <text>→</text>
         </view>
       </view>
       <view class="direction-row">
+        <view class="direction-spacer"></view>
         <view 
           class="direction-btn down"
           data-direction="down"
           bindtap="onDirectionTap"
+          hover-class="direction-btn-hover"
+          hover-stay-time="50"
         >
           <text>↓</text>
         </view>
+        <view class="direction-spacer"></view>
       </view>
     </view>
 
-    <!-- 操作按钮 -->
+    <!-- 图标化操作按钮 -->
     <view class="action-buttons">
       <button 
-        class="action-btn {{gameStatus === 'playing' ? '' : 'disabled'}}"
+        class="action-btn icon-btn {{gameStatus === 'playing' ? '' : 'disabled'}}"
         bindtap="{{gameStatus === 'playing' ? 'pauseGame' : ''}}"
         disabled="{{gameStatus !== 'playing'}}"
       >
-        <text>{{gameStatus === 'playing' ? '暂停' : '未开始'}}</text>
+        <text class="btn-icon">{{gameStatus === 'playing' ? '⏸' : '▶'}}</text>
+        <text class="btn-tooltip">{{gameStatus === 'playing' ? '暂停' : '开始'}}</text>
       </button>
       <button 
-        class="action-btn"
+        class="action-btn icon-btn"
         bindtap="restartGame"
       >
-        <text>重玩</text>
+        <text class="btn-icon">↻</text>
+        <text class="btn-tooltip">重玩</text>
       </button>
       <button 
-        class="action-btn {{showHint ? 'active' : ''}}"
+        class="action-btn icon-btn {{showHint ? 'active' : ''}}"
         bindtap="toggleHint"
       >
-        <text>{{showHint ? '隐藏' : '提示'}}</text>
+        <text class="btn-icon">💡</text>
+        <text class="btn-tooltip">{{showHint ? '隐藏' : '提示'}}</text>
       </button>
     </view>
   </view>

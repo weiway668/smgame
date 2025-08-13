@@ -139,8 +139,8 @@ Page({
   initCanvas() {
     const systemInfo = wx.getSystemInfoSync();
     const screenWidth = systemInfo.windowWidth;
-    // 减少边距，增大画布尺寸
-    const canvasSize = Math.min(screenWidth - 30, 350);
+    // 根据屏幕宽度设置画布尺寸，留出适当边距
+    const canvasSize = Math.floor(screenWidth - 40); // 左右各留20px边距
     
     this.setData({
       canvasWidth: canvasSize,
@@ -217,7 +217,7 @@ Page({
     // 找到起点
     const start = this.mazeGenerator.findCell(2);
     
-    // 计算单元格大小
+    // 计算单元格大小，确保迷宫完全填充画布
     const cellSize = Math.floor(this.data.canvasWidth / config.size);
     
     this.setData({
@@ -265,7 +265,11 @@ Page({
     // 清空离屏画布
     ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
-    // 绘制迷宫背景
+    // 先填充整个画布背景
+    ctx.fillStyle = '#2C3E50';
+    ctx.fillRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
+    
+    // 绘制迷宫
     for (let y = 0; y < maze.length; y++) {
       for (let x = 0; x < maze[y].length; x++) {
         const cell = maze[y][x];
@@ -273,35 +277,35 @@ Page({
         const py = y * cellSize;
         
         if (cell === 1) {
-          // 墙壁
+          // 墙壁 - 深色
           ctx.fillStyle = '#2C3E50';
           ctx.fillRect(px, py, cellSize, cellSize);
         } else if (cell === 0) {
-          // 路径
+          // 路径 - 浅色
           ctx.fillStyle = '#ECF0F1';
           ctx.fillRect(px, py, cellSize, cellSize);
         } else if (cell === 2) {
-          // 起点
+          // 起点 - 绿色
           ctx.fillStyle = '#27AE60';
           ctx.fillRect(px, py, cellSize, cellSize);
           ctx.fillStyle = 'white';
-          ctx.font = `${cellSize * 0.6}px Arial`;
+          ctx.font = `${Math.floor(cellSize * 0.5)}px Arial`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('S', px + cellSize / 2, py + cellSize / 2);
         } else if (cell === 3) {
-          // 终点
+          // 终点 - 红色
           ctx.fillStyle = '#E74C3C';
           ctx.fillRect(px, py, cellSize, cellSize);
           ctx.fillStyle = 'white';
-          ctx.font = `${cellSize * 0.6}px Arial`;
+          ctx.font = `${Math.floor(cellSize * 0.5)}px Arial`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('E', px + cellSize / 2, py + cellSize / 2);
         }
         
-        // 绘制网格线
-        ctx.strokeStyle = '#BDC3C7';
+        // 绘制细网格线
+        ctx.strokeStyle = 'rgba(189, 195, 199, 0.3)';
         ctx.lineWidth = 0.5;
         ctx.strokeRect(px, py, cellSize, cellSize);
       }
@@ -431,11 +435,13 @@ Page({
     const ctx = this.ctx;
     const { cellSize, playerX, playerY, showHint, solution } = this.data;
     
-    // 完整复制背景（更可靠）
+    // 完整复制背景
     ctx.save();
-    ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
+    // 先用墙壁颜色填充整个画布，防止出现白边
+    ctx.fillStyle = '#2C3E50';
+    ctx.fillRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
-    // 直接绘制离屏Canvas内容（指定完整的源和目标尺寸）
+    // 绘制离屏Canvas内容
     ctx.drawImage(
       this.offscreenCanvas, 
       0, 0, this.data.canvasWidth, this.data.canvasHeight,

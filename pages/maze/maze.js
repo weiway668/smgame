@@ -250,8 +250,8 @@ Page({
     // 缓存背景
     this.cacheBackground();
     
-    // 绘制完整画面
-    this.render();
+    // 绘制完整画面（使用简化版避免问题）
+    this.renderSimple();
   },
   
   // 缓存静态背景（迷宫）
@@ -315,10 +315,15 @@ Page({
     
     const ctx = this.ctx;
     const { cellSize, playerX, playerY, showHint, solution } = this.data;
+    const dpr = wx.getSystemInfoSync().pixelRatio;
     
-    // 复制背景到主画布
+    // 复制背景到主画布（考虑DPR）
     ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
-    ctx.drawImage(this.offscreenCanvas, 0, 0, this.data.canvasWidth, this.data.canvasHeight);
+    ctx.drawImage(
+      this.offscreenCanvas, 
+      0, 0, this.data.canvasWidth * dpr, this.data.canvasHeight * dpr,  // 源区域
+      0, 0, this.data.canvasWidth, this.data.canvasHeight  // 目标区域
+    );
     
     // 绘制提示路径
     if (showHint && solution.length > 0) {
@@ -358,23 +363,24 @@ Page({
     
     const { cellSize, playerX, playerY } = this.data;
     const ctx = this.ctx;
+    const dpr = wx.getSystemInfoSync().pixelRatio;
     
     // 清除上一次玩家位置（从缓存的背景恢复）
-    if (this.lastPlayerX >= 0 && this.lastPlayerY >= 0) {
+    if (this.lastPlayerX >= 0 && this.lastPlayerY >= 0 && this.offscreenCanvas) {
       const lastX = this.lastPlayerX * cellSize;
       const lastY = this.lastPlayerY * cellSize;
       
-      // 从离屏Canvas恢复该区域
-      if (this.offscreenCanvas) {
-        ctx.save();
-        ctx.globalCompositeOperation = 'copy';
-        ctx.drawImage(
-          this.offscreenCanvas,
-          lastX, lastY, cellSize, cellSize,
-          lastX, lastY, cellSize, cellSize
-        );
-        ctx.restore();
-      }
+      // 从离屏Canvas恢复该区域，注意DPR缩放
+      ctx.save();
+      // 清除旧位置
+      ctx.clearRect(lastX, lastY, cellSize, cellSize);
+      // 从离屏Canvas复制背景
+      ctx.drawImage(
+        this.offscreenCanvas,
+        lastX * dpr, lastY * dpr, cellSize * dpr, cellSize * dpr,  // 源区域（考虑DPR）
+        lastX, lastY, cellSize, cellSize  // 目标区域
+      );
+      ctx.restore();
     }
     
     // 绘制新的玩家位置
@@ -415,15 +421,67 @@ Page({
       return;
     }
     
-    // 使用requestAnimationFrame优化动画
-    if (this.animationId) {
-      cancelAnimationFrame(this.animationId);
+    // 直接渲染，不使用requestAnimationFrame（避免异步问题）
+    this.renderSimple();
+  },
+  
+  // 简化的渲染方法（避免背景变白）
+  renderSimple() {
+    if (!this.ctx || !this.offscreenCanvas) return;
+    
+    const ctx = this.ctx;
+    const { cellSize, playerX, playerY, showHint, solution } = this.data;
+    
+    // 完整复制背景（更可靠）
+    ctx.save();
+    ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
+    
+    // 直接绘制离屏Canvas内容
+    ctx.drawImage(this.offscreenCanvas, 0, 0);
+    
+    // 绘制提示路径
+    if (showHint && solution.length > 0) {
+      ctx.strokeStyle = 'rgba(255, 193, 7, 0.5)';
+      ctx.lineWidth = cellSize * 0.3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      ctx.beginPath();
+      for (let i = 0; i < solution.length; i++) {
+        const [x, y] = solution[i];
+        const px = x * cellSize + cellSize / 2;
+        const py = y * cellSize + cellSize / 2;
+        
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
     }
     
-    this.animationId = requestAnimationFrame(() => {
-      this.render();
-      this.animationId = null;
-    });
+    // 直接绘制玩家
+    const px = playerX * cellSize + cellSize / 2;
+    const py = playerY * cellSize + cellSize / 2;
+    
+    ctx.fillStyle = '#3498DB';
+    ctx.beginPath();
+    ctx.arc(px, py, cellSize * 0.35, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 绘制眼睛
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(px - cellSize * 0.1, py - cellSize * 0.05, cellSize * 0.08, 0, Math.PI * 2);
+    ctx.arc(px + cellSize * 0.1, py - cellSize * 0.05, cellSize * 0.08, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
+    
+    // 记录位置
+    this.lastPlayerX = playerX;
+    this.lastPlayerY = playerY;
   },
 
   // 开始游戏
@@ -625,8 +683,8 @@ Page({
       });
     }
     
-    // 重新缓存背景（因为提示路径改变了）
-    this.render();
+    // 重新渲染（提示路径改变了）
+    this.renderSimple();
     
     // 播放音效
     if (this.data.settings.soundEnabled) {

@@ -59,11 +59,11 @@
   <text class="menu-icon">⚙</text>
 </view>
 
+<!-- 菜单遮罩 -->
+<view class="menu-overlay" wx:if="{{menuOpen}}" bindtap="closeMenu"></view>
+
 <!-- 浮动菜单面板 -->
 <view class="menu-panel {{menuOpen ? 'open' : ''}}" wx:if="{{menuOpen}}">
-  <!-- 菜单遮罩 -->
-  <view class="menu-overlay" bindtap="closeMenu"></view>
-  
   <!-- 菜单内容 -->
   <view class="menu-content">
     <!-- 难度选择 -->

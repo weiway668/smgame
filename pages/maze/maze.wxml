@@ -24,14 +24,24 @@
 
   <!-- 游戏画布 -->
   <view class="game-canvas-wrapper">
-    <canvas 
-      type="2d"
-      id="mazeCanvas"
-      class="game-canvas"
-      style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
-      bindtouchstart="touchStart"
-      bindtouchend="touchEnd"
-    ></canvas>
+    <!-- Canvas容器，确保相对定位 -->
+    <view class="canvas-container" style="position: relative; width: {{canvasWidth}}px; height: {{canvasHeight}}px;">
+      <canvas 
+        type="2d"
+        id="mazeCanvas"
+        class="game-canvas"
+        style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+      ></canvas>
+      
+      <!-- 透明覆盖层处理所有交互，确保完全覆盖Canvas -->
+      <view 
+        class="touch-layer"
+        style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+        bindtap="handleTap"
+        bindtouchstart="touchStart"
+        bindtouchend="touchEnd"
+      ></view>
+    </view>
     
     <!-- 悬浮统计信息 -->
     <view class="floating-stats">
@@ -65,57 +75,10 @@
 
   <!-- 控制面板 -->
   <view class="control-panel">
-    <!-- 方向控制器（增大间距） -->
-    <view class="direction-controller">
-      <view class="direction-row">
-        <view class="direction-spacer"></view>
-        <view 
-          class="direction-btn up"
-          data-direction="up"
-          bindtap="onDirectionTap"
-          hover-class="direction-btn-hover"
-          hover-stay-time="50"
-        >
-          <text>↑</text>
-        </view>
-        <view class="direction-spacer"></view>
-      </view>
-      <view class="direction-row middle">
-        <view 
-          class="direction-btn left"
-          data-direction="left"
-          bindtap="onDirectionTap"
-          hover-class="direction-btn-hover"
-          hover-stay-time="50"
-        >
-          <text>←</text>
-        </view>
-        <view class="direction-center">
-          <view class="center-dot"></view>
-        </view>
-        <view 
-          class="direction-btn right"
-          data-direction="right"
-          bindtap="onDirectionTap"
-          hover-class="direction-btn-hover"
-          hover-stay-time="50"
-        >
-          <text>→</text>
-        </view>
-      </view>
-      <view class="direction-row">
-        <view class="direction-spacer"></view>
-        <view 
-          class="direction-btn down"
-          data-direction="down"
-          bindtap="onDirectionTap"
-          hover-class="direction-btn-hover"
-          hover-stay-time="50"
-        >
-          <text>↓</text>
-        </view>
-        <view class="direction-spacer"></view>
-      </view>
+    <!-- 控制提示 -->
+    <view class="control-hint">
+      <text class="hint-icon">👆</text>
+      <text class="hint-text">滑动或点击目标位置移动</text>
     </view>
 
     <!-- 图标化操作按钮 -->

@@ -114,10 +114,22 @@
 }
 
 .game-canvas {
+  position: relative;
   background: #2C3E50; /* 与迷宫墙壁颜色一致 */
   border-radius: 12rpx;
   box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.2);
   border: 2rpx solid rgba(255, 255, 255, 0.1);
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* 透明交互层 */
+.touch-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
 }
 
 /* 游戏覆盖层 */
@@ -182,95 +194,36 @@
   backdrop-filter: blur(10px);
 }
 
-/* 方向控制器（增大间距） */
-.direction-controller {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20rpx;
-  padding: 10rpx;
-}
-
-.direction-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.direction-row.middle {
-  margin: 10rpx 0;
-}
-
-.direction-spacer {
-  width: 20rpx;
-  height: 100rpx;
-}
-
-.direction-btn {
-  width: 100rpx;
-  height: 100rpx;
+/* 控制提示 */
+.control-hint {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #4CAF50, #388E3C);
-  color: white;
-  border-radius: 24rpx;
-  margin: 0 20rpx;
-  font-size: 50rpx;
-  font-weight: bold;
-  box-shadow: 0 8rpx 20rpx rgba(76, 175, 80, 0.35),
-              inset 0 -3rpx 0 rgba(0, 0, 0, 0.15);
-  transition: all 0.1s ease;
-  position: relative;
-  /* 扩大触控区域 */
-  padding: 10rpx;
-  margin: -10rpx 10rpx;
+  gap: 15rpx;
+  padding: 30rpx;
+  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+  border-radius: 20rpx;
+  margin: 20rpx;
 }
 
-.direction-btn::after {
-  content: '';
-  position: absolute;
-  top: 3rpx;
-  left: 3rpx;
-  right: 3rpx;
-  bottom: 3rpx;
-  border-radius: 21rpx;
-  background: linear-gradient(145deg, rgba(255,255,255,0.25), transparent);
-  pointer-events: none;
+.hint-icon {
+  font-size: 36rpx;
+  animation: hint-pulse 2s ease-in-out infinite;
 }
 
-/* 按压效果增强 */
-.direction-btn-hover {
-  transform: scale(0.85) translateY(3rpx);
-  background: linear-gradient(145deg, #388E3C, #2E7D32);
-  box-shadow: 0 4rpx 10rpx rgba(76, 175, 80, 0.25),
-              inset 0 -2rpx 0 rgba(0, 0, 0, 0.2);
+.hint-text {
+  font-size: 28rpx;
+  color: #495057;
+  font-weight: 500;
 }
 
-.direction-center {
-  width: 120rpx;
-  height: 100rpx;
-  margin: 0 10rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-/* 中心装饰点 */
-.center-dot {
-  width: 40rpx;
-  height: 40rpx;
-  background: radial-gradient(circle, #81C784, #4CAF50);
-  border-radius: 50%;
-  box-shadow: 0 4rpx 8rpx rgba(76, 175, 80, 0.3),
-              inset 0 -2rpx 4rpx rgba(0, 0, 0, 0.2);
-  animation: pulse-dot 3s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 1; }
+@keyframes hint-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 /* 图标化操作按钮 */

@@ -156,6 +156,44 @@ class MazeGenerator {
     
     return [];
   }
+  
+  // 寻找从指定位置到目标位置的路径
+  findPath(fromX, fromY, toX, toY) {
+    // 检查目标位置是否可达
+    if (!this.isValidMove(toX, toY)) {
+      return null;
+    }
+    
+    // 使用BFS算法寻找最短路径
+    const queue = [[fromX, fromY, []]];
+    const visited = new Set();
+    visited.add(`${fromX},${fromY}`);
+    
+    const directions = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+    
+    while (queue.length > 0) {
+      const [x, y, path] = queue.shift();
+      
+      // 到达目标
+      if (x === toX && y === toY) {
+        return [...path, [x, y]];
+      }
+      
+      // 探索四个方向
+      for (let [dx, dy] of directions) {
+        const nx = x + dx;
+        const ny = y + dy;
+        const key = `${nx},${ny}`;
+        
+        if (this.isValidMove(nx, ny) && !visited.has(key)) {
+          visited.add(key);
+          queue.push([nx, ny, [...path, [x, y]]]);
+        }
+      }
+    }
+    
+    return null;  // 无法到达目标
+  }
 
   // 查找特定值的单元格
   findCell(value) {

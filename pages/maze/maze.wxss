@@ -59,12 +59,12 @@
   font-size: 18rpx;
 }
 
-/* 悬浮统计信息 */
+/* 悬浮统计信息 - 优化为更紧凑的角落显示 */
 .floating-stats {
   position: absolute;
-  top: 20rpx;
-  left: 20rpx;
-  right: 20rpx;
+  top: 10rpx;
+  left: 10rpx;
+  right: 10rpx;
   display: flex;
   justify-content: space-between;
   pointer-events: none;
@@ -74,12 +74,14 @@
 .floating-stat-item {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  padding: 12rpx 20rpx;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+  gap: 6rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .floating-stat-item.left {
@@ -91,12 +93,12 @@
 }
 
 .stat-icon {
-  font-size: 24rpx;
+  font-size: 20rpx;
   filter: grayscale(0%);
 }
 
 .floating-stat-item .stat-value {
-  font-size: 28rpx;
+  font-size: 24rpx;
   font-weight: 600;
   color: white;
   text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);

@@ -4,10 +4,7 @@
 <view class="container">
   <!-- 紧凑型游戏头部 -->
   <view class="game-header-compact">
-    <view class="back-btn-compact" bindtap="backToHome">
-      <text>←</text>
-    </view>
-    <text class="game-title-compact">走迷宫</text>
+
     <picker 
       mode="selector"
       range="{{difficulties}}"
@@ -75,11 +72,7 @@
 
   <!-- 控制面板 -->
   <view class="control-panel">
-    <!-- 控制提示 -->
-    <view class="control-hint">
-      <text class="hint-icon">👆</text>
-      <text class="hint-text">滑动或点击目标位置移动</text>
-    </view>
+
 
     <!-- 图标化操作按钮 -->
     <view class="action-buttons">
@@ -98,13 +91,7 @@
         <text class="btn-icon">↻</text>
         <text class="btn-tooltip">重玩</text>
       </button>
-      <button 
-        class="action-btn icon-btn {{showHint ? 'active' : ''}}"
-        bindtap="toggleHint"
-      >
-        <text class="btn-icon">💡</text>
-        <text class="btn-tooltip">{{showHint ? '隐藏' : '提示'}}</text>
-      </button>
+
     </view>
   </view>
 </view>

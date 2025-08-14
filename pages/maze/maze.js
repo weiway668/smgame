@@ -991,31 +991,12 @@ Page({
       return;
     }
     
-    // 检查是否为相邻格子（上下左右）
-    const isAdjacent = (Math.abs(targetX - playerX) === 1 && targetY === playerY) ||
-                       (Math.abs(targetY - playerY) === 1 && targetX === playerX);
-    
-    if (!isAdjacent) {
-      // 不是相邻格子，显示提示
-      wx.showToast({
-        title: '只能移动到相邻格子',
-        icon: 'none',
-        duration: 1000
-      });
-      
-      // 轻微震动反馈
-      if (this.data.settings.vibrationEnabled) {
-        wx.vibrateShort({ type: 'light' });
-      }
-      return;
-    }
-    
     // 检查目标格子是否可通行
     const targetCell = maze[targetY][targetX];
     if (targetCell === 1) {
       // 是墙壁，不能移动
       wx.showToast({
-        title: '前方是墙壁',
+        title: '目标是墙壁',
         icon: 'none',
         duration: 1000
       });
@@ -1027,16 +1008,127 @@ Page({
       return;
     }
     
-    // 执行单步移动
-    let direction = null;
-    if (targetX > playerX) direction = 'right';
-    else if (targetX < playerX) direction = 'left';
-    else if (targetY > playerY) direction = 'down';
-    else if (targetY < playerY) direction = 'up';
+    // 检查是否在同一直线上（水平或垂直）
+    const isStraightLine = (targetX === playerX) || (targetY === playerY);
     
-    if (direction) {
-      this.movePlayer(direction);
+    // 检查是否为相邻格子
+    const isAdjacent = (Math.abs(targetX - playerX) === 1 && targetY === playerY) ||
+                       (Math.abs(targetY - playerY) === 1 && targetX === playerX);
+    
+    if (!isStraightLine) {
+      // 不在直线上，只允许相邻移动
+      if (!isAdjacent) {
+        wx.showToast({
+          title: '只能沿直线或相邻移动',
+          icon: 'none',
+          duration: 1000
+        });
+        
+        // 轻微震动反馈
+        if (this.data.settings.vibrationEnabled) {
+          wx.vibrateShort({ type: 'light' });
+        }
+        return;
+      }
     }
+    
+    // 如果是直线移动（非相邻），检查路径是否畅通
+    if (isStraightLine && !isAdjacent) {
+      if (!this.checkStraightPath(playerX, playerY, targetX, targetY)) {
+        wx.showToast({
+          title: '路径被阻挡',
+          icon: 'none',
+          duration: 1000
+        });
+        
+        // 震动反馈
+        if (this.data.settings.vibrationEnabled) {
+          wx.vibrateShort({ type: 'medium' });
+        }
+        return;
+      }
+      
+      // 执行连续移动
+      this.moveAlongStraightPath(playerX, playerY, targetX, targetY);
+    } else {
+      // 执行单步移动（相邻格子）
+      let direction = null;
+      if (targetX > playerX) direction = 'right';
+      else if (targetX < playerX) direction = 'left';
+      else if (targetY > playerY) direction = 'down';
+      else if (targetY < playerY) direction = 'up';
+      
+      if (direction) {
+        this.movePlayer(direction);
+      }
+    }
+  },
+  
+  // 检查直线路径是否畅通
+  checkStraightPath(x1, y1, x2, y2) {
+    const { maze } = this.data;
+    
+    if (x1 === x2) {
+      // 垂直移动，检查路径上的所有格子
+      const start = Math.min(y1, y2);
+      const end = Math.max(y1, y2);
+      for (let y = start; y <= end; y++) {
+        if (maze[y][x1] === 1) {
+          return false; // 路径上有墙
+        }
+      }
+    } else if (y1 === y2) {
+      // 水平移动，检查路径上的所有格子
+      const start = Math.min(x1, x2);
+      const end = Math.max(x1, x2);
+      for (let x = start; x <= end; x++) {
+        if (maze[y1][x] === 1) {
+          return false; // 路径上有墙
+        }
+      }
+    }
+    
+    return true; // 路径畅通
+  },
+  
+  // 沿直线路径连续移动
+  moveAlongStraightPath(fromX, fromY, toX, toY) {
+    const steps = [];
+    
+    if (fromX === toX) {
+      // 垂直移动
+      const direction = toY > fromY ? 'down' : 'up';
+      const distance = Math.abs(toY - fromY);
+      for (let i = 0; i < distance; i++) {
+        steps.push(direction);
+      }
+    } else {
+      // 水平移动
+      const direction = toX > fromX ? 'right' : 'left';
+      const distance = Math.abs(toX - fromX);
+      for (let i = 0; i < distance; i++) {
+        steps.push(direction);
+      }
+    }
+    
+    // 执行连续移动动画
+    this.executeMoveSequence(steps);
+  },
+  
+  // 执行移动序列
+  executeMoveSequence(steps) {
+    if (!steps || steps.length === 0) return;
+    
+    let index = 0;
+    const moveInterval = setInterval(() => {
+      if (index >= steps.length) {
+        clearInterval(moveInterval);
+        return;
+      }
+      
+      this.movePlayer(steps[index]);
+      index++;
+    }, 100); // 每100ms移动一步，快速但可见
   },
   
 

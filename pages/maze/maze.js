@@ -491,45 +491,6 @@ Page({
     // 绘制起点和终点的动画效果
     this.drawAnimatedMarkers();
     
-    // 绘制自动寻路路径
-    if (this.autoPath && this.autoPath.length > 0) {
-      ctx.save();
-      ctx.strokeStyle = 'rgba(100, 181, 246, 0.6)';
-      ctx.lineWidth = cellSize * 0.25;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.setLineDash([5, 5]);
-      
-      ctx.beginPath();
-      // 从当前位置开始
-      ctx.moveTo(playerX * cellSize + cellSize / 2, playerY * cellSize + cellSize / 2);
-      
-      for (let i = 0; i < this.autoPath.length; i++) {
-        const [x, y] = this.autoPath[i];
-        const px = x * cellSize + cellSize / 2;
-        const py = y * cellSize + cellSize / 2;
-        ctx.lineTo(px, py);
-      }
-      ctx.stroke();
-      ctx.restore();
-      
-      // 在目标位置绘制涟漪效果
-      const targetX = this.autoPath[this.autoPath.length - 1][0];
-      const targetY = this.autoPath[this.autoPath.length - 1][1];
-      const targetPx = targetX * cellSize + cellSize / 2;
-      const targetPy = targetY * cellSize + cellSize / 2;
-      
-      ctx.save();
-      const ripple = (Date.now() / 1000) % 1;
-      ctx.globalAlpha = 1 - ripple;
-      ctx.strokeStyle = '#64B5F6';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(targetPx, targetPy, cellSize * 0.3 * ripple, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
-    }
-    
     // 绘制提示路径
     if (showHint && solution.length > 0) {
       ctx.strokeStyle = 'rgba(255, 193, 7, 0.5)';
@@ -888,19 +849,15 @@ Page({
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
           // 水平滑动
           if (deltaX > threshold) {
-            this.stopAutoMove();
             this.movePlayer('right');
           } else if (deltaX < -threshold) {
-            this.stopAutoMove();
             this.movePlayer('left');
           }
         } else {
           // 垂直滑动
           if (deltaY > threshold) {
-            this.stopAutoMove();
             this.movePlayer('down');
           } else if (deltaY < -threshold) {
-            this.stopAutoMove();
             this.movePlayer('up');
           }
         }
@@ -942,19 +899,15 @@ Page({
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
       // 水平滑动
       if (deltaX > threshold) {
-        this.stopAutoMove();  // 停止自动移动
         this.movePlayer('right');
       } else if (deltaX < -threshold) {
-        this.stopAutoMove();  // 停止自动移动
         this.movePlayer('left');
       }
     } else {
       // 垂直滑动
       if (deltaY > threshold) {
-        this.stopAutoMove();  // 停止自动移动
         this.movePlayer('down');
       } else if (deltaY < -threshold) {
-        this.stopAutoMove();  // 停止自动移动
         this.movePlayer('up');
       }
     }
@@ -1038,13 +991,31 @@ Page({
       return;
     }
     
-    // 寻找路径
-    const path = this.mazeGenerator.findPath(playerX, playerY, targetX, targetY);
+    // 检查是否为相邻格子（上下左右）
+    const isAdjacent = (Math.abs(targetX - playerX) === 1 && targetY === playerY) ||
+                       (Math.abs(targetY - playerY) === 1 && targetX === playerX);
     
-    if (path === null) {
-      // 目标不可达，显示提示
+    if (!isAdjacent) {
+      // 不是相邻格子，显示提示
       wx.showToast({
-        title: '无法到达',
+        title: '只能移动到相邻格子',
+        icon: 'none',
+        duration: 1000
+      });
+      
+      // 轻微震动反馈
+      if (this.data.settings.vibrationEnabled) {
+        wx.vibrateShort({ type: 'light' });
+      }
+      return;
+    }
+    
+    // 检查目标格子是否可通行
+    const targetCell = maze[targetY][targetX];
+    if (targetCell === 1) {
+      // 是墙壁，不能移动
+      wx.showToast({
+        title: '前方是墙壁',
         icon: 'none',
         duration: 1000
       });
@@ -1056,65 +1027,18 @@ Page({
       return;
     }
     
-    // 开始自动移动
-    this.autoMoveAlongPath(path);
-  },
-  
-  // 沿路径自动移动
-  autoMoveAlongPath(path) {
-    if (!path || path.length <= 1) return;
+    // 执行单步移动
+    let direction = null;
+    if (targetX > playerX) direction = 'right';
+    else if (targetX < playerX) direction = 'left';
+    else if (targetY > playerY) direction = 'down';
+    else if (targetY < playerY) direction = 'up';
     
-    // 停止之前的自动移动
-    this.stopAutoMove();
-    
-    // 移除第一个点（当前位置）
-    const movePath = path.slice(1);
-    
-    // 显示路径
-    this.showAutoPath(movePath);
-    
-    let index = 0;
-    
-    // 创建移动定时器
-    this.autoMoveTimer = setInterval(() => {
-      if (index >= movePath.length) {
-        this.stopAutoMove();
-        return;
-      }
-      
-      const [nextX, nextY] = movePath[index];
-      const { playerX, playerY } = this.data;
-      
-      // 确定移动方向
-      let direction = null;
-      if (nextX > playerX) direction = 'right';
-      else if (nextX < playerX) direction = 'left';
-      else if (nextY > playerY) direction = 'down';
-      else if (nextY < playerY) direction = 'up';
-      
-      if (direction) {
-        this.movePlayer(direction);
-      }
-      
-      index++;
-    }, 200);  // 每200ms移动一步
-  },
-  
-  // 显示自动寻路路径
-  showAutoPath(path) {
-    this.autoPath = path;
-    this.renderSimple();
-  },
-  
-  // 停止自动移动
-  stopAutoMove() {
-    if (this.autoMoveTimer) {
-      clearInterval(this.autoMoveTimer);
-      this.autoMoveTimer = null;
+    if (direction) {
+      this.movePlayer(direction);
     }
-    this.autoPath = null;
-    this.renderSimple();
   },
+  
 
   // 切换提示
   toggleHint() {

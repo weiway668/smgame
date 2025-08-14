@@ -322,8 +322,8 @@ Page({
     // 清空离屏画布
     ctx.clearRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
-    // 先填充整个画布背景 - 淡紫色墙壁
-    ctx.fillStyle = '#D4C5F9';
+    // 先填充整个画布背景 - 中灰色墙壁
+    ctx.fillStyle = '#8E8E93';
     ctx.fillRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
     // 绘制迷宫
@@ -334,25 +334,25 @@ Page({
         const py = y * cellSize;
         
         if (cell === 1) {
-          // 墙壁 - 淡紫色
-          ctx.fillStyle = '#D4C5F9';
+          // 墙壁 - 中灰色
+          ctx.fillStyle = '#8E8E93';
           ctx.fillRect(px, py, cellSize, cellSize);
           // 添加柔和的内阴影效果
-          ctx.strokeStyle = 'rgba(184, 169, 243, 0.2)';
+          ctx.strokeStyle = 'rgba(142, 142, 147, 0.3)';
           ctx.lineWidth = 1;
           ctx.strokeRect(px + 0.5, py + 0.5, cellSize - 1, cellSize - 1);
         } else if (cell === 0) {
-          // 路径 - 纯白色
-          ctx.fillStyle = '#FFFFFF';
+          // 路径 - 浅灰白
+          ctx.fillStyle = '#F5F5F7';
           ctx.fillRect(px, py, cellSize, cellSize);
         } else if (cell === 2) {
-          // 起点 - 淡绿色带渐变
+          // 起点 - 青灰色带渐变
           const gradient = ctx.createRadialGradient(
             px + cellSize / 2, py + cellSize / 2, 0,
             px + cellSize / 2, py + cellSize / 2, cellSize / 2
           );
-          gradient.addColorStop(0, '#B8E6D1');
-          gradient.addColorStop(1, '#A0D8C1');
+          gradient.addColorStop(0, '#7FA89C');
+          gradient.addColorStop(1, '#6B9184');
           ctx.fillStyle = gradient;
           ctx.fillRect(px, py, cellSize, cellSize);
           
@@ -362,13 +362,13 @@ Page({
           ctx.textBaseline = 'middle';
           ctx.fillText('S', px + cellSize / 2, py + cellSize / 2);
         } else if (cell === 3) {
-          // 终点 - 淡粉色带渐变
+          // 终点 - 暖灰粉带渐变
           const gradient = ctx.createRadialGradient(
             px + cellSize / 2, py + cellSize / 2, 0,
             px + cellSize / 2, py + cellSize / 2, cellSize / 2
           );
-          gradient.addColorStop(0, '#FFD3E0');
-          gradient.addColorStop(1, '#FFC0D0');
+          gradient.addColorStop(0, '#B89A9C');
+          gradient.addColorStop(1, '#A68688');
           ctx.fillStyle = gradient;
           ctx.fillRect(px, py, cellSize, cellSize);
           
@@ -468,7 +468,7 @@ Page({
     ctx.save();
     
     // 绘制玩家圆形
-    ctx.fillStyle = '#93B5E1';
+    ctx.fillStyle = '#5E7A99';
     ctx.beginPath();
     ctx.arc(px, py, cellSize * 0.35, 0, Math.PI * 2);
     ctx.fill();
@@ -513,7 +513,7 @@ Page({
     // 完整复制背景
     ctx.save();
     // 先用墙壁颜色填充整个画布，防止出现白边
-    ctx.fillStyle = '#D4C5F9';
+    ctx.fillStyle = '#8E8E93';
     ctx.fillRect(0, 0, this.data.canvasWidth, this.data.canvasHeight);
     
     // 绘制离屏Canvas内容
@@ -525,7 +525,7 @@ Page({
     
     // 绘制路径痕迹
     if (visitedCells && visitedCells.length > 0) {
-      ctx.fillStyle = 'rgba(184, 230, 209, 0.2)';
+      ctx.fillStyle = 'rgba(142, 142, 147, 0.15)';
       visitedCells.forEach(([x, y]) => {
         // 不绘制起点和终点的痕迹
         if (maze[y][x] === 0) {
@@ -563,7 +563,7 @@ Page({
     const px = playerX * cellSize + cellSize / 2;
     const py = playerY * cellSize + cellSize / 2;
     
-    ctx.fillStyle = '#93B5E1';
+    ctx.fillStyle = '#5E7A99';
     ctx.beginPath();
     ctx.arc(px, py, cellSize * 0.35, 0, Math.PI * 2);
     ctx.fill();
@@ -605,7 +605,7 @@ Page({
           // 起点脉冲光效
           ctx.save();
           ctx.globalAlpha = pulse * 0.3;
-          ctx.fillStyle = '#B8E6D1';
+          ctx.fillStyle = '#7FA89C';
           ctx.beginPath();
           ctx.arc(px, py, cellSize * 0.7, 0, Math.PI * 2);
           ctx.fill();
@@ -614,7 +614,7 @@ Page({
           // 终点呼吸灯效果
           ctx.save();
           ctx.globalAlpha = (1 - pulse) * 0.4;
-          ctx.fillStyle = '#FFD3E0';
+          ctx.fillStyle = '#B89A9C';
           ctx.beginPath();
           ctx.arc(px, py, cellSize * 0.7, 0, Math.PI * 2);
           ctx.fill();

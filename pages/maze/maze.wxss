@@ -234,9 +234,9 @@
 
 .game-canvas {
   position: relative;
-  background: #D4C5F9; /* 与迷宫墙壁颜色一致 */
+  background: #8E8E93; /* 与迷宫墙壁颜色一致 */
   border-radius: 16rpx;
-  box-shadow: 0 6rpx 20rpx rgba(184, 169, 243, 0.2);
+  box-shadow: 0 6rpx 20rpx rgba(142, 142, 147, 0.2);
   border: 2rpx solid rgba(255, 255, 255, 0.8);
   margin: 0;
   padding: 0;

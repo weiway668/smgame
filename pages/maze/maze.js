@@ -362,13 +362,13 @@ Page({
           ctx.textBaseline = 'middle';
           ctx.fillText('S', px + cellSize / 2, py + cellSize / 2);
         } else if (cell === 3) {
-          // 终点 - 深红色带渐变
+          // 终点 - 黄色带渐变
           const gradient = ctx.createRadialGradient(
             px + cellSize / 2, py + cellSize / 2, 0,
             px + cellSize / 2, py + cellSize / 2, cellSize / 2
           );
-          gradient.addColorStop(0, '#DC143C');
-          gradient.addColorStop(1, '#8B0000');
+          gradient.addColorStop(0, '#FFD700');
+          gradient.addColorStop(1, '#FFA500');
           ctx.fillStyle = gradient;
           ctx.fillRect(px, py, cellSize, cellSize);
           
@@ -614,7 +614,7 @@ Page({
           // 终点呼吸灯效果
           ctx.save();
           ctx.globalAlpha = (1 - pulse) * 0.4;
-          ctx.fillStyle = '#DC143C';
+          ctx.fillStyle = '#FFD700';
           ctx.beginPath();
           ctx.arc(px, py, cellSize * 0.7, 0, Math.PI * 2);
           ctx.fill();

@@ -5,7 +5,7 @@
   <!-- 游戏画布 - 全屏显示 -->
   <view class="game-canvas-wrapper">
     <!-- Canvas容器，确保相对定位 -->
-    <view class="canvas-container" style="position: relative; width: {{canvasWidth}}px; height: {{canvasHeight}}px;">
+    <view class="canvas-container" style="position: relative; width: {{canvasWidth}}px; height: {{canvasHeight}}px; z-index: 1;">
       <canvas 
         type="2d"
         id="mazeCanvas"
@@ -35,7 +35,7 @@
       </view>
     </view>
     
-    <!-- 游戏状态覆盖层 -->
+    <!-- 游戏状态覆盖层 - 移到canvas-container之后确保显示在上层 -->
     <view class="game-overlay" wx:if="{{gameStatus === 'ready'}}">
       <view class="overlay-content">
         <text class="overlay-title">准备开始</text>
@@ -52,7 +52,7 @@
       </view>
     </view>
     
-    <!-- 游戏胜利覆盖层 -->
+    <!-- 游戏胜利覆盖层 - 移到canvas-container之后确保显示在上层 -->
     <view class="game-overlay" wx:if="{{gameStatus === 'win'}}">
       <view class="overlay-content">
         <text class="overlay-title">🎉 恭喜通关！</text>

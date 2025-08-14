@@ -232,6 +232,12 @@
   height: 100%;
 }
 
+/* Canvas容器 - 确保有明确的z-index */
+.canvas-container {
+  position: relative;
+  z-index: 1;
+}
+
 .game-canvas {
   position: relative;
   background: #2C5F8D; /* 与迷寫墙壁颜色一致 */

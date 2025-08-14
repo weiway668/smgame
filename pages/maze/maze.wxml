@@ -51,6 +51,36 @@
         <button class="btn-restart" bindtap="restartGame">重新开始</button>
       </view>
     </view>
+    
+    <!-- 游戏胜利覆盖层 -->
+    <view class="game-overlay" wx:if="{{gameStatus === 'win'}}">
+      <view class="overlay-content">
+        <text class="overlay-title">🎉 恭喜通关！</text>
+        <text class="overlay-desc">{{difficulty === 'easy' ? '简单' : difficulty === 'medium' ? '中等' : '困难'}}难度完成</text>
+        
+        <view class="win-stats">
+          <text class="stat-line">✨ 步数：{{steps}} 步</text>
+          <text class="stat-line">⏱ 用时：{{time}} 秒</text>
+          <text class="stat-line" wx:if="{{bestSteps && steps <= bestSteps}}">🏆 新纪录！</text>
+        </view>
+        
+        <!-- 进阶模式按钮 -->
+        <block wx:if="{{progressionMode && difficulty !== 'hard'}}">
+          <text class="overlay-hint">准备好挑战更高难度了吗？</text>
+          <button class="btn-next" bindtap="nextLevel">
+            挑战{{difficulty === 'easy' ? '中等' : '困难'}}难度
+          </button>
+          <button class="btn-replay" bindtap="restartGame">重玩当前</button>
+        </block>
+        
+        <!-- 非进阶模式或最高难度按钮 -->
+        <block wx:else>
+          <text class="overlay-hint" wx:if="{{difficulty === 'hard'}}">你已征服最高难度！</text>
+          <button class="btn-next" bindtap="restartGame">再来一局</button>
+          <button class="btn-back" bindtap="backToMenu">返回主页</button>
+        </block>
+      </view>
+    </view>
   </view>
 </view>
 

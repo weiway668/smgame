@@ -1380,10 +1380,6 @@ Page({
       this.timer = null;
     }
     
-    this.setData({
-      gameStatus: 'win'
-    });
-    
     // 保存记录
     this.saveBestRecords();
     
@@ -1391,7 +1387,12 @@ Page({
     const currentDifficulty = this.data.difficulty;
     const levelProgress = this.data.levelProgress;
     levelProgress[currentDifficulty]++;
-    this.setData({ levelProgress });
+    
+    // 设置游戏状态为胜利，显示覆盖层
+    this.setData({ 
+      gameStatus: 'win',
+      levelProgress: levelProgress
+    });
     
     // 播放胜利音效
     if (this.data.settings.soundEnabled) {
@@ -1402,50 +1403,11 @@ Page({
     if (this.data.settings.vibrationEnabled) {
       wx.vibrateLong();
     }
-    
-    // 显示胜利提示
-    const config = MazeGenerator.getDifficultyConfig(this.data.difficulty);
-    const difficulties = ['easy', 'medium', 'hard'];
-    const currentIndex = difficulties.indexOf(this.data.difficulty);
-    
-    // 根据难度设置不同的按钮文字
-    let confirmText = '再来一局';
-    let modalContent = `你用了${this.data.steps}步，${this.formatTime(this.data.time)}完成了${config.name}难度的迷宫！`;
-    
-    if (this.data.progressionMode) {
-      if (currentIndex === 0) {
-        confirmText = '挑战中等难度';
-        modalContent += '\n\n准备好挑战更难的迷宫了吗？';
-      } else if (currentIndex === 1) {
-        confirmText = '挑战困难难度';
-        modalContent += '\n\n你已经很厉害了！要挑战最高难度吗？';
-      } else {
-        confirmText = '再来一局';
-        modalContent += '\n\n恭喜你征服了最高难度！';
-      }
-    }
-    
-    wx.showModal({
-      title: '🎉 恭喜通关！',
-      content: modalContent,
-      confirmText: confirmText,
-      cancelText: '重玩当前',
-      showCancel: true,
-      success: (res) => {
-        if (res.confirm) {
-          if (this.data.progressionMode && currentIndex < 2) {
-            // 进入下一难度
-            this.nextLevel();
-          } else {
-            // 重新开始当前难度
-            this.restartGame();
-          }
-        } else {
-          // 重玩当前难度
-          this.restartGame();
-        }
-      }
-    });
+  },
+  
+  // 返回主菜单
+  backToMenu() {
+    wx.navigateBack();
   },
 
   // 格式化时间

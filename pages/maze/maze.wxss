@@ -267,6 +267,7 @@
   backdrop-filter: blur(8px);
   border-radius: 20rpx;
   box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.3);
+  z-index: 100;
 }
 
 .overlay-content {
@@ -304,6 +305,62 @@
 .btn-restart {
   background: linear-gradient(135deg, #87CEEB, #ADD8E6);
   box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
+}
+
+/* 胜利界面样式 */
+.win-stats {
+  margin: 30rpx 0;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15rpx;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-line {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 12rpx 0;
+  text-align: center;
+}
+
+.overlay-hint {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 20rpx 0;
+  text-align: center;
+}
+
+.btn-next {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 24rpx 80rpx;
+  border-radius: 50rpx;
+  font-size: 34rpx;
+  font-weight: bold;
+  margin: 10rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.4);
+  width: 80%;
+}
+
+.btn-replay, .btn-back {
+  background: linear-gradient(135deg, #1E90FF, #4682B4);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 20rpx 60rpx;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  margin: 10rpx;
+  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
+  width: 70%;
+}
+
+.btn-back {
+  background: linear-gradient(135deg, #87CEEB, #ADD8E6);
+  color: #333;
 }
 
 

@@ -3,7 +3,7 @@
 
 .container {
   height: 100vh;
-  background: linear-gradient(180deg, #F5F3FF 0%, #FFF9F5 100%);
+  background: linear-gradient(180deg, #E6F2FF 0%, #FFFFFF 100%);
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -17,12 +17,12 @@
   right: 40rpx;
   width: 100rpx;
   height: 100rpx;
-  background: linear-gradient(145deg, #B8A9F3, #D4C5F9);
+  background: linear-gradient(145deg, #1E90FF, #4682B4);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6rpx 20rpx rgba(184, 169, 243, 0.3);
+  box-shadow: 0 6rpx 20rpx rgba(30, 144, 255, 0.3);
   border: 2px solid rgba(255, 255, 255, 0.8);
   z-index: 200;
   transition: all 0.3s ease;
@@ -33,7 +33,7 @@
 }
 
 .menu-button.active {
-  background: linear-gradient(145deg, #D4C5F9, #E0D5FF);
+  background: linear-gradient(145deg, #4682B4, #5F9FBF);
   transform: rotate(90deg);
 }
 
@@ -123,10 +123,10 @@
 }
 
 .difficulty-btn.active {
-  background: linear-gradient(145deg, #B8A9F3, #D4C5F9);
+  background: linear-gradient(145deg, #1E90FF, #4682B4);
   color: white;
-  border-color: #B8A9F3;
-  box-shadow: 0 4rpx 12rpx rgba(184, 169, 243, 0.3);
+  border-color: #1E90FF;
+  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
 }
 
 /* 菜单按钮 */
@@ -153,10 +153,10 @@
 }
 
 .menu-btn.active {
-  background: linear-gradient(145deg, #B8E6D1, #D1F2E4);
+  background: linear-gradient(145deg, #87CEEB, #ADD8E6);
   color: #4A4A4A;
-  border-color: #B8E6D1;
-  box-shadow: 0 4rpx 12rpx rgba(184, 230, 209, 0.3);
+  border-color: #87CEEB;
+  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
 }
 
 .menu-btn.active .menu-btn-text {
@@ -234,9 +234,9 @@
 
 .game-canvas {
   position: relative;
-  background: #8E8E93; /* 与迷宫墙壁颜色一致 */
+  background: #2C5F8D; /* 与迷寫墙壁颜色一致 */
   border-radius: 16rpx;
-  box-shadow: 0 6rpx 20rpx rgba(142, 142, 147, 0.2);
+  box-shadow: 0 6rpx 20rpx rgba(44, 95, 141, 0.2);
   border: 2rpx solid rgba(255, 255, 255, 0.8);
   margin: 0;
   padding: 0;
@@ -288,20 +288,20 @@
 }
 
 .btn-start, .btn-resume, .btn-restart {
-  background: linear-gradient(135deg, #B8E6D1, #D1F2E4);
-  color: #4A4A4A;
+  background: linear-gradient(135deg, #1E90FF, #4682B4);
+  color: white;
   border: 1px solid rgba(255, 255, 255, 0.8);
   padding: 20rpx 60rpx;
   border-radius: 50rpx;
   font-size: 32rpx;
   font-weight: bold;
   margin: 10rpx;
-  box-shadow: 0 4rpx 12rpx rgba(184, 230, 209, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
 }
 
 .btn-restart {
-  background: linear-gradient(135deg, #FFDAB9, #FFE5CC);
-  box-shadow: 0 4rpx 12rpx rgba(255, 218, 185, 0.3);
+  background: linear-gradient(135deg, #87CEEB, #ADD8E6);
+  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
 }
 
 

@@ -285,18 +285,30 @@ Page({
   
   // 初始化绘制
   initDraw() {
-    if (!this.ctx) return;
+    if (!this.ctx) {
+      console.log('Canvas上下文未初始化');
+      return;
+    }
+    console.log('开始初始化绘制');
     
     // 缓存背景
     this.cacheBackground();
     
     // 绘制完整画面（使用简化版避免问题）
     this.renderSimple();
+    console.log('绘制完成');
   },
   
   // 缓存静态背景（迷宫）
   cacheBackground() {
-    if (!this.offscreenCtx || this.backgroundCached) return;
+    if (!this.offscreenCtx) {
+      console.log('离屏Canvas未初始化');
+      return;
+    }
+    if (this.backgroundCached) {
+      console.log('背景已缓存，跳过');
+      return;
+    }
     
     const { maze, cellSize } = this.data;
     const ctx = this.offscreenCtx;
@@ -1199,6 +1211,7 @@ Page({
   // 选择难度
   selectDifficulty(e) {
     const difficulty = e.currentTarget.dataset.difficulty;
+    console.log('选择难度:', difficulty, '当前难度:', this.data.difficulty);
     
     // 如果难度没变，不做任何操作
     if (difficulty === this.data.difficulty) {
@@ -1214,6 +1227,7 @@ Page({
     
     // 更新难度和迷宫尺寸
     const config = MazeGenerator.getDifficultyConfig(difficulty);
+    console.log('新配置:', config);
     this.setData({
       difficulty: difficulty,
       mazeSize: config.size
@@ -1221,9 +1235,30 @@ Page({
     
     // 重新计算Canvas尺寸
     this.initCanvas();
+    console.log('新Canvas尺寸:', this.data.canvasWidth, 'x', this.data.canvasHeight);
+    
+    // 更新Canvas物理尺寸
+    if (this.canvas && this.ctx) {
+      const dpr = wx.getSystemInfoSync().pixelRatio;
+      this.canvas.width = this.data.canvasWidth * dpr;
+      this.canvas.height = this.data.canvasHeight * dpr;
+      this.ctx.scale(dpr, dpr);
+      
+      // 重新创建离屏Canvas
+      this.offscreenCanvas = wx.createOffscreenCanvas({
+        type: '2d',
+        width: this.data.canvasWidth,
+        height: this.data.canvasHeight
+      });
+      this.offscreenCtx = this.offscreenCanvas.getContext('2d');
+    }
+    
+    // 标记背景需要重新缓存
+    this.backgroundCached = false;
     
     // 重新生成迷宫
     this.generateMaze();
+    console.log('迷宫已生成，大小:', this.data.mazeSize);
     
     // 加载最佳记录
     this.loadBestRecords();

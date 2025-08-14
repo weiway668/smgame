@@ -36,6 +36,7 @@ Page({
     // 显示控制
     showHint: false,
     solution: [],
+    menuOpen: false, // 菜单展开状态
     
     // 路径痕迹
     visitedCells: [],
@@ -145,16 +146,32 @@ Page({
     this.saveGameState();
   },
 
-  // 初始化Canvas
+  // 初始化Canvas - 最大化利用屏幕空间
   initCanvas() {
     const systemInfo = wx.getSystemInfoSync();
     const screenWidth = systemInfo.windowWidth;
-    // 根据屏幕宽度设置画布尺寸，留出适当边距
-    const canvasSize = Math.floor(screenWidth - 40); // 左右各留20px边距
+    const screenHeight = systemInfo.windowHeight;
+    
+    // 减少边距，最大化迷宫显示区域
+    const padding = 20;
+    const maxCanvasWidth = screenWidth - padding;
+    // 移除顶部和底部后，可以使用更多高度
+    const maxCanvasHeight = screenHeight - 140; // 为悬浮按钮和安全区域留出空间
+    
+    // 根据迷宫大小计算最优尺寸
+    const { mazeSize } = this.data;
+    const cellWidth = Math.floor(maxCanvasWidth / mazeSize);
+    const cellHeight = Math.floor(maxCanvasHeight / mazeSize);
+    const cellSize = Math.min(cellWidth, cellHeight, 35); // 提高最大单元格尺寸
+    
+    // 计算实际画布尺寸
+    const canvasWidth = cellSize * mazeSize;
+    const canvasHeight = cellSize * mazeSize;
     
     this.setData({
-      canvasWidth: canvasSize,
-      canvasHeight: canvasSize
+      canvasWidth: canvasWidth,
+      canvasHeight: canvasHeight,
+      cellSize: cellSize
     });
   },
 
@@ -613,6 +630,9 @@ Page({
       clearInterval(this.timer);
       this.timer = null;
     }
+    
+    // 关闭菜单
+    this.closeMenu();
   },
 
   // 继续游戏
@@ -629,6 +649,9 @@ Page({
         time: this.data.time + 1
       });
     }, 1000);
+    
+    // 关闭菜单
+    this.closeMenu();
   },
 
   // 重新开始
@@ -649,6 +672,9 @@ Page({
     this.lastPlayerY = -1;
     
     this.generateMaze();
+    
+    // 关闭菜单
+    this.closeMenu();
   },
 
   // 移动玩家
@@ -1159,12 +1185,51 @@ Page({
     }
   },
 
-  // 切换难度
-  changeDifficulty(e) {
-    const difficulty = e.detail.value;
-    this.setData({ difficulty });
+  // 选择难度
+  selectDifficulty(e) {
+    const difficulty = e.currentTarget.dataset.difficulty;
+    
+    // 如果难度没变，不做任何操作
+    if (difficulty === this.data.difficulty) {
+      this.closeMenu();
+      return;
+    }
+    
+    // 更新难度
+    const config = MazeGenerator.getDifficultyConfig(difficulty);
+    this.setData({
+      difficulty: difficulty,
+      mazeSize: config.size
+    });
+    
+    // 重新初始化Canvas和迷宫
+    this.initCanvas();
+    
+    // 重置游戏
+    this.resetGame();
+    
+    // 重新生成迷宫
+    this.generateMaze();
+    
+    // 加载最佳记录
     this.loadBestRecords();
-    this.restartGame();
+    
+    // 关闭菜单
+    this.closeMenu();
+  },
+  
+  // 切换菜单
+  toggleMenu() {
+    this.setData({
+      menuOpen: !this.data.menuOpen
+    });
+  },
+  
+  // 关闭菜单
+  closeMenu() {
+    this.setData({
+      menuOpen: false
+    });
   },
 
   // 游戏胜利

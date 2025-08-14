@@ -2,24 +2,7 @@
 <!-- 迷宫游戏页面 -->
 
 <view class="container">
-  <!-- 紧凑型游戏头部 -->
-  <view class="game-header-compact">
-
-    <picker 
-      mode="selector"
-      range="{{difficulties}}"
-      range-key="label"
-      value="{{difficulty === 'easy' ? 0 : difficulty === 'medium' ? 1 : 2}}"
-      bindchange="changeDifficulty"
-    >
-      <view class="difficulty-selector-compact">
-        <text>{{difficulties[difficulty === 'easy' ? 0 : difficulty === 'medium' ? 1 : 2].label}}</text>
-        <text class="arrow">▼</text>
-      </view>
-    </picker>
-  </view>
-
-  <!-- 游戏画布 -->
+  <!-- 游戏画布 - 全屏显示 -->
   <view class="game-canvas-wrapper">
     <!-- Canvas容器，确保相对定位 -->
     <view class="canvas-container" style="position: relative; width: {{canvasWidth}}px; height: {{canvasHeight}}px;">
@@ -56,7 +39,7 @@
     <view class="game-overlay" wx:if="{{gameStatus === 'ready'}}">
       <view class="overlay-content">
         <text class="overlay-title">准备开始</text>
-        <text class="overlay-desc">滑动或使用方向键移动</text>
+        <text class="overlay-desc">点击目标位置或滑动移动</text>
         <button class="btn-start" bindtap="startGame">开始游戏</button>
       </view>
     </view>
@@ -69,29 +52,56 @@
       </view>
     </view>
   </view>
+</view>
 
-  <!-- 控制面板 -->
-  <view class="control-panel">
+<!-- 浮动菜单按钮 -->
+<view class="menu-button {{menuOpen ? 'active' : ''}}" bindtap="toggleMenu">
+  <text class="menu-icon">⚙</text>
+</view>
 
-
-    <!-- 图标化操作按钮 -->
-    <view class="action-buttons">
-      <button 
-        class="action-btn icon-btn {{gameStatus === 'playing' ? '' : 'disabled'}}"
-        bindtap="{{gameStatus === 'playing' ? 'pauseGame' : ''}}"
-        disabled="{{gameStatus !== 'playing'}}"
-      >
-        <text class="btn-icon">{{gameStatus === 'playing' ? '⏸' : '▶'}}</text>
-        <text class="btn-tooltip">{{gameStatus === 'playing' ? '暂停' : '开始'}}</text>
+<!-- 浮动菜单面板 -->
+<view class="menu-panel {{menuOpen ? 'open' : ''}}" wx:if="{{menuOpen}}">
+  <!-- 菜单遮罩 -->
+  <view class="menu-overlay" bindtap="closeMenu"></view>
+  
+  <!-- 菜单内容 -->
+  <view class="menu-content">
+    <!-- 难度选择 -->
+    <view class="menu-section">
+      <text class="menu-label">难度选择</text>
+      <view class="difficulty-options">
+        <button 
+          wx:for="{{difficulties}}" 
+          wx:key="value"
+          class="difficulty-btn {{difficulty === item.value ? 'active' : ''}}"
+          bindtap="selectDifficulty"
+          data-difficulty="{{item.value}}"
+        >
+          {{item.label}}
+        </button>
+      </view>
+    </view>
+    
+    <!-- 游戏控制 -->
+    <view class="menu-section">
+      <button class="menu-btn" bindtap="restartGame">
+        <text class="menu-btn-icon">↻</text>
+        <text class="menu-btn-text">重新开始</text>
       </button>
+      
       <button 
-        class="action-btn icon-btn"
-        bindtap="restartGame"
+        class="menu-btn" 
+        bindtap="{{gameStatus === 'playing' ? 'pauseGame' : 'resumeGame'}}"
+        wx:if="{{gameStatus === 'playing' || gameStatus === 'paused'}}"
       >
-        <text class="btn-icon">↻</text>
-        <text class="btn-tooltip">重玩</text>
+        <text class="menu-btn-icon">{{gameStatus === 'playing' ? '⏸' : '▶'}}</text>
+        <text class="menu-btn-text">{{gameStatus === 'playing' ? '暂停游戏' : '继续游戏'}}</text>
       </button>
-
+      
+      <button class="menu-btn {{showHint ? 'active' : ''}}" bindtap="toggleHint">
+        <text class="menu-btn-icon">💡</text>
+        <text class="menu-btn-text">{{showHint ? '隐藏提示' : '显示提示'}}</text>
+      </button>
     </view>
   </view>
 </view>

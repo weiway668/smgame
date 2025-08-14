@@ -10,7 +10,7 @@ Page({
         name: '走迷宫',
         icon: '🌟',
         desc: '找到出口，挑战自己',
-        color: '#4CAF50',
+        color: '#B8E6D1',  // 淡薄荷绿
         path: '/pages/maze/maze'
       },
       {
@@ -18,7 +18,7 @@ Page({
         name: '消消乐',
         icon: '💎',
         desc: '消除方块，获得高分',
-        color: '#FF9800',
+        color: '#FFDAB9',  // 淡桃色
         path: '/pages/match3/match3'
       }
     ],

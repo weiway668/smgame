@@ -5,7 +5,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #87CEEB 0%, #F0F8FF 50%, #E6F3FF 100%);
+  background: linear-gradient(180deg, #F5F3FF 0%, #FFF9F5 50%, #FFFFFF 100%);
   padding: 0;
 }
 
@@ -34,14 +34,14 @@
 .title-main {
   font-size: 48rpx;
   font-weight: bold;
-  color: #1E90FF;
+  color: #B8A9F3;
   margin-bottom: 10rpx;
-  text-shadow: 2rpx 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  text-shadow: 2rpx 2rpx 4rpx rgba(184, 169, 243, 0.2);
 }
 
 .title-sub {
   font-size: 28rpx;
-  color: #666;
+  color: #7A7A7A;
   font-weight: 300;
 }
 
@@ -66,14 +66,15 @@
   height: 180rpx;
   border-radius: 24rpx;
   overflow: hidden;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8rpx 24rpx rgba(184, 169, 243, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateZ(0);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .game-card:active {
   transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4rpx 12rpx rgba(184, 169, 243, 0.3);
 }
 
 .game-card-inner {
@@ -150,15 +151,15 @@
   background: white;
   border-radius: 50rpx;
   padding: 20rpx 60rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4rpx 12rpx rgba(184, 169, 243, 0.2);
   transition: all 0.3s ease;
-  border: none;
+  border: 1px solid #F0E6F6;
   font-size: 32rpx;
 }
 
 .btn-setting:active {
   transform: scale(0.95);
-  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2rpx 6rpx rgba(184, 169, 243, 0.3);
 }
 
 .setting-icon {

@@ -1,24 +1,27 @@
 /**app.wxss**/
 /* 小梦想游戏 - 全局样式 */
 
-/* 颜色变量定义 */
+/* 颜色变量定义 - 浅色系主题 */
 page {
-  --primary-color: #1E90FF;  /* 道奇蓝 */
-  --secondary-color: #87CEEB; /* 天蓝色 */
-  --background-color: #F0F8FF; /* 爱丽丝蓝 */
-  --success-color: #32C832;
-  --warning-color: #FFA500;
-  --error-color: #FF4444;
-  --gold-color: #FFD700;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-light: #999999;
-  --border-color: #E0E0E0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --primary-color: #B8A9F3;  /* 淡紫蓝 */
+  --secondary-color: #FFD3E0; /* 淡粉色 */
+  --accent-color: #B8E6D1; /* 淡薄荷绿 */
+  --peach-color: #FFDAB9; /* 淡桃色 */
+  --background-color: #FFF9F5; /* 米白色 */
+  --surface-color: #FFFFFF; /* 纯白 */
+  --success-color: #B8E6D1;
+  --warning-color: #FFDAB9;
+  --error-color: #FFB3BA;
+  --gold-color: #FFE4B5;
+  --text-primary: #4A4A4A;
+  --text-secondary: #7A7A7A;
+  --text-light: #A5A5A5;
+  --border-color: #F0E6F6;
+  --shadow-color: rgba(184, 169, 243, 0.15);
   
   /* 全局设置 */
   height: 100%;
-  background: linear-gradient(180deg, var(--secondary-color) 0%, var(--background-color) 100%);
+  background: linear-gradient(180deg, #F5F3FF 0%, var(--background-color) 100%);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
   font-size: 16px;
   color: var(--text-primary);
@@ -37,17 +40,18 @@ page {
 
 /* 卡片样式 */
 .card {
-  background: white;
-  border-radius: 12px;
+  background: var(--surface-color);
+  border-radius: 16px;
   padding: 24rpx;
   margin: 16rpx;
-  box-shadow: 0 2px 8px var(--shadow-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  border: 1px solid var(--border-color);
   transition: all 0.3s ease;
 }
 
 .card:active {
   transform: scale(0.98);
-  box-shadow: 0 1px 4px var(--shadow-color);
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 /* 按钮样式 */
@@ -64,8 +68,9 @@ page {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(135deg, var(--primary-color), #D4C5F9);
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .btn-primary:active {
@@ -74,7 +79,7 @@ page {
 }
 
 .btn-secondary {
-  background: white;
+  background: var(--surface-color);
   color: var(--primary-color);
   border: 2rpx solid var(--primary-color);
 }
@@ -114,17 +119,18 @@ page {
 .game-card {
   width: 320rpx;
   height: 400rpx;
-  background: white;
-  border-radius: 16px;
+  background: var(--surface-color);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px var(--shadow-color);
+  box-shadow: 0 6px 16px var(--shadow-color);
+  border: 1px solid var(--border-color);
   transition: all 0.3s ease;
   position: relative;
 }
 
 .game-card:hover {
   transform: translateY(-8rpx);
-  box-shadow: 0 8px 24px var(--shadow-color);
+  box-shadow: 0 10px 28px var(--shadow-color);
 }
 
 .game-card-image {
@@ -151,13 +157,14 @@ page {
 
 /* 分数板样式 */
 .score-board {
-  background: linear-gradient(135deg, var(--gold-color), #FFC700);
-  color: white;
+  background: linear-gradient(135deg, var(--gold-color), #FFF0D4);
+  color: var(--text-primary);
   padding: 16rpx 32rpx;
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 20px;
   font-weight: bold;
-  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 228, 181, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 /* 动画类 */

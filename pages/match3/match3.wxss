@@ -3,7 +3,7 @@
 
 .container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FF9800 0%, #FFC107 50%, #FFE082 100%);
+  background: linear-gradient(180deg, #FFE5E5 0%, #FFF9F5 50%, #FFFFFF 100%);
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -34,34 +34,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FF9800;
-  color: white;
+  background: linear-gradient(135deg, #FFDAB9, #FFE5CC);
+  color: #4A4A4A;
   border-radius: 50%;
   font-size: 32rpx;
   font-weight: bold;
-  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.3);
+  box-shadow: 0 2rpx 8rpx rgba(255, 218, 185, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .game-title {
   font-size: 36rpx;
   font-weight: bold;
-  color: #F57C00;
+  color: #7A7A7A;
 }
 
 .mode-badge {
   padding: 8rpx 20rpx;
   border-radius: 20rpx;
   font-size: 24rpx;
-  color: white;
+  color: #4A4A4A;
   font-weight: bold;
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .mode-badge.classic {
-  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  background: linear-gradient(135deg, #B8E6D1, #D1F2E4);
 }
 
 .mode-badge.survival {
-  background: linear-gradient(135deg, #F44336, #EF5350);
+  background: linear-gradient(135deg, #FFB3BA, #FFC9CF);
 }
 
 /* 游戏统计 */
@@ -69,10 +71,11 @@
   display: flex;
   justify-content: space-around;
   padding: 20rpx;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   margin: 20rpx;
   border-radius: 16rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4rpx 12rpx rgba(255, 218, 185, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .stat-item {

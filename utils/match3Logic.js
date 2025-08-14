@@ -14,12 +14,12 @@ class Match3Logic {
     
     // 颜色配置
     this.colors = [
-      '#FF6B6B', // 红色
-      '#4ECDC4', // 青色
-      '#45B7D1', // 蓝色
-      '#96CEB4', // 绿色
-      '#FFEAA7', // 黄色
-      '#DDA0DD', // 紫色
+      '#FFB3BA', // 淡粉红
+      '#FFDFBA', // 淡橙
+      '#FFFFBA', // 淡黄
+      '#BAFFC9', // 淡绿
+      '#BAE1FF', // 淡蓝
+      '#E0BBE4', // 淡紫
     ];
     
     // 特殊方块类型
@@ -516,11 +516,11 @@ class Match3Logic {
   // 获取连击状态描述
   getComboStatus() {
     if (this.combo >= 8) {
-      return { text: '超级爆发!', color: '#FF0000', multiplier: 2.0 };
+      return { text: '超级爆发!', color: '#FF8FA3', multiplier: 2.0 };
     } else if (this.combo >= 5) {
-      return { text: '狂热状态!', color: '#FF6B6B', multiplier: 1.5 };
+      return { text: '狂热状态!', color: '#FFB3BA', multiplier: 1.5 };
     } else if (this.combo >= 3) {
-      return { text: '热火状态!', color: '#FFA500', multiplier: 1.2 };
+      return { text: '热火状态!', color: '#FFDFBA', multiplier: 1.2 };
     }
     return { text: '', color: '', multiplier: 1.0 };
   }

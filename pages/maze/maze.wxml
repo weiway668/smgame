@@ -102,6 +102,11 @@
         <text class="menu-btn-icon">💡</text>
         <text class="menu-btn-text">{{showHint ? '隐藏提示' : '显示提示'}}</text>
       </button>
+      
+      <button class="menu-btn {{progressionMode ? 'active' : ''}}" bindtap="toggleProgressionMode">
+        <text class="menu-btn-icon">📈</text>
+        <text class="menu-btn-text">{{progressionMode ? '进阶模式开' : '进阶模式关'}}</text>
+      </button>
     </view>
   </view>
 </view>

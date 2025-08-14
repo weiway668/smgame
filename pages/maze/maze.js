@@ -48,6 +48,14 @@ Page({
       { value: 'hard', label: '困难', size: 21 }
     ],
     
+    // 进阶模式
+    progressionMode: true,  // 是否启用进阶模式
+    levelProgress: {        // 各难度通关次数
+      easy: 0,
+      medium: 0,
+      hard: 0
+    },
+    
     // Canvas相关
     canvasWidth: 330,
     canvasHeight: 330,
@@ -705,6 +713,70 @@ Page({
     // 关闭菜单
     this.closeMenu();
   },
+  
+  // 进入下一难度
+  nextLevel() {
+    const difficulties = ['easy', 'medium', 'hard'];
+    const currentIndex = difficulties.indexOf(this.data.difficulty);
+    
+    if (currentIndex < 2) {
+      // 进入下一难度
+      const nextDifficulty = difficulties[currentIndex + 1];
+      const nextConfig = this.data.difficulties.find(d => d.value === nextDifficulty);
+      
+      // 更新难度
+      const config = MazeGenerator.getDifficultyConfig(nextDifficulty);
+      this.setData({
+        difficulty: nextDifficulty,
+        mazeSize: config.size
+      });
+      
+      // 重新计算Canvas尺寸
+      this.initCanvas();
+      
+      // 更新Canvas物理尺寸
+      if (this.canvas && this.ctx) {
+        const dpr = wx.getSystemInfoSync().pixelRatio;
+        this.canvas.width = this.data.canvasWidth * dpr;
+        this.canvas.height = this.data.canvasHeight * dpr;
+        this.ctx.scale(dpr, dpr);
+        
+        // 重新创建离屏Canvas
+        this.offscreenCanvas = wx.createOffscreenCanvas({
+          type: '2d',
+          width: this.data.canvasWidth,
+          height: this.data.canvasHeight
+        });
+        this.offscreenCtx = this.offscreenCanvas.getContext('2d');
+      }
+      
+      // 标记背景需要重新缓存
+      this.backgroundCached = false;
+      
+      // 生成新迷宫
+      this.generateMaze();
+      
+      // 加载最佳记录
+      this.loadBestRecords();
+      
+      // 显示进阶提示
+      wx.showToast({
+        title: `进入${nextConfig.label}难度！`,
+        icon: 'success',
+        duration: 2000
+      });
+    } else {
+      // 已达最高难度，可以选择重置或继续困难模式
+      wx.showToast({
+        title: '已达最高难度！',
+        icon: 'none',
+        duration: 2000
+      });
+      
+      // 继续困难模式
+      this.restartGame();
+    }
+  },
 
   // 移动玩家
   movePlayer(direction) {
@@ -1213,6 +1285,24 @@ Page({
       this.playSound('click');
     }
   },
+  
+  // 切换进阶模式
+  toggleProgressionMode() {
+    const progressionMode = !this.data.progressionMode;
+    this.setData({ progressionMode });
+    
+    // 显示提示
+    wx.showToast({
+      title: progressionMode ? '进阶模式已开启' : '进阶模式已关闭',
+      icon: 'none',
+      duration: 1500
+    });
+    
+    // 播放音效
+    if (this.data.settings.soundEnabled) {
+      this.playSound('click');
+    }
+  },
 
   // 选择难度
   selectDifficulty(e) {
@@ -1297,6 +1387,12 @@ Page({
     // 保存记录
     this.saveBestRecords();
     
+    // 更新进阶进度
+    const currentDifficulty = this.data.difficulty;
+    const levelProgress = this.data.levelProgress;
+    levelProgress[currentDifficulty]++;
+    this.setData({ levelProgress });
+    
     // 播放胜利音效
     if (this.data.settings.soundEnabled) {
       this.playSound('victory');
@@ -1309,16 +1405,44 @@ Page({
     
     // 显示胜利提示
     const config = MazeGenerator.getDifficultyConfig(this.data.difficulty);
+    const difficulties = ['easy', 'medium', 'hard'];
+    const currentIndex = difficulties.indexOf(this.data.difficulty);
+    
+    // 根据难度设置不同的按钮文字
+    let confirmText = '再来一局';
+    let modalContent = `你用了${this.data.steps}步，${this.formatTime(this.data.time)}完成了${config.name}难度的迷宫！`;
+    
+    if (this.data.progressionMode) {
+      if (currentIndex === 0) {
+        confirmText = '挑战中等难度';
+        modalContent += '\n\n准备好挑战更难的迷宫了吗？';
+      } else if (currentIndex === 1) {
+        confirmText = '挑战困难难度';
+        modalContent += '\n\n你已经很厉害了！要挑战最高难度吗？';
+      } else {
+        confirmText = '再来一局';
+        modalContent += '\n\n恭喜你征服了最高难度！';
+      }
+    }
+    
     wx.showModal({
-      title: '恭喜你！',
-      content: `你用了${this.data.steps}步，${this.formatTime(this.data.time)}完成了${config.name}难度的迷宫！`,
-      confirmText: '再来一局',
-      cancelText: '返回',
+      title: '🎉 恭喜通关！',
+      content: modalContent,
+      confirmText: confirmText,
+      cancelText: '重玩当前',
+      showCancel: true,
       success: (res) => {
         if (res.confirm) {
-          this.restartGame();
+          if (this.data.progressionMode && currentIndex < 2) {
+            // 进入下一难度
+            this.nextLevel();
+          } else {
+            // 重新开始当前难度
+            this.restartGame();
+          }
         } else {
-          wx.navigateBack();
+          // 重玩当前难度
+          this.restartGame();
         }
       }
     });

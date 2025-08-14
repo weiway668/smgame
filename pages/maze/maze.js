@@ -152,28 +152,46 @@ Page({
     const screenWidth = systemInfo.windowWidth;
     const screenHeight = systemInfo.windowHeight;
     
-    // 减少边距，最大化迷宫显示区域
-    const padding = 20;
-    const maxCanvasWidth = screenWidth - padding;
-    // 移除顶部和底部后，可以使用更多高度
-    const maxCanvasHeight = screenHeight - 140; // 为悬浮按钮和安全区域留出空间
+    // 根据难度动态调整可用空间
+    const { mazeSize, difficulty } = this.data;
+    let padding, maxHeight;
     
-    // 根据迷宫大小计算最优尺寸
-    const { mazeSize } = this.data;
+    if (difficulty === 'easy') {
+      // 简单模式：较小的迷宫，留更多边距
+      padding = 40;
+      maxHeight = screenHeight - 200;
+    } else if (difficulty === 'medium') {
+      // 中等模式：适中的空间利用
+      padding = 30;
+      maxHeight = screenHeight - 160;
+    } else {
+      // 困难模式：最大化利用屏幕空间
+      padding = 20;
+      maxHeight = screenHeight - 120;
+    }
+    
+    const maxCanvasWidth = screenWidth - padding;
+    const maxCanvasHeight = maxHeight;
+    
+    // 计算单元格大小
     const cellWidth = Math.floor(maxCanvasWidth / mazeSize);
     const cellHeight = Math.floor(maxCanvasHeight / mazeSize);
     
-    // 根据难度设置不同的最大单元格尺寸
-    let maxCellSize = 35;
-    if (mazeSize <= 11) {
-      maxCellSize = 40; // 简单难度，较大的单元格
-    } else if (mazeSize <= 15) {
-      maxCellSize = 30; // 中等难度
+    // 设置最小和最大单元格尺寸
+    let minCellSize, maxCellSize;
+    if (difficulty === 'easy') {
+      minCellSize = 25;
+      maxCellSize = 35;
+    } else if (difficulty === 'medium') {
+      minCellSize = 20;
+      maxCellSize = 30;
     } else {
-      maxCellSize = 25; // 困难难度，较小的单元格以适应更多格子
+      minCellSize = 15;
+      maxCellSize = 25;
     }
     
-    const cellSize = Math.min(cellWidth, cellHeight, maxCellSize);
+    // 选择合适的单元格大小
+    const cellSize = Math.max(minCellSize, Math.min(cellWidth, cellHeight, maxCellSize));
     
     // 计算实际画布尺寸
     const canvasWidth = cellSize * mazeSize;

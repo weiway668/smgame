@@ -162,7 +162,18 @@ Page({
     const { mazeSize } = this.data;
     const cellWidth = Math.floor(maxCanvasWidth / mazeSize);
     const cellHeight = Math.floor(maxCanvasHeight / mazeSize);
-    const cellSize = Math.min(cellWidth, cellHeight, 35); // 提高最大单元格尺寸
+    
+    // 根据难度设置不同的最大单元格尺寸
+    let maxCellSize = 35;
+    if (mazeSize <= 11) {
+      maxCellSize = 40; // 简单难度，较大的单元格
+    } else if (mazeSize <= 15) {
+      maxCellSize = 30; // 中等难度
+    } else {
+      maxCellSize = 25; // 困难难度，较小的单元格以适应更多格子
+    }
+    
+    const cellSize = Math.min(cellWidth, cellHeight, maxCellSize);
     
     // 计算实际画布尺寸
     const canvasWidth = cellSize * mazeSize;
@@ -1195,18 +1206,21 @@ Page({
       return;
     }
     
-    // 更新难度
+    // 停止当前游戏计时器
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+    
+    // 更新难度和迷宫尺寸
     const config = MazeGenerator.getDifficultyConfig(difficulty);
     this.setData({
       difficulty: difficulty,
       mazeSize: config.size
     });
     
-    // 重新初始化Canvas和迷宫
+    // 重新计算Canvas尺寸
     this.initCanvas();
-    
-    // 重置游戏
-    this.resetGame();
     
     // 重新生成迷宫
     this.generateMaze();

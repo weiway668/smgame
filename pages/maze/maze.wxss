@@ -49,12 +49,13 @@
   bottom: 160rpx;
   left: 50%;
   transform: translateX(-50%);
-  width: 450rpx;
-  max-width: 90vw;
-  background: #ffffff;
+  width: 60%;
+  max-width: 600rpx;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
   border-radius: 20rpx;
   border: none;
-  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.3);
   z-index: 210;
   animation: slideUp 0.3s ease forwards;
   overflow: hidden;
@@ -78,14 +79,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 249, 245, 0.6);
+  background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
   z-index: 180;
 }
 
 /* 菜单内容 */
 .menu-content {
-  padding: 24rpx;
+  padding: 40rpx;
 }
 
 .menu-section {
@@ -99,7 +100,7 @@
 .menu-label {
   display: block;
   font-size: 24rpx;
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 12rpx;
   font-weight: 500;
 }
@@ -113,11 +114,11 @@
 .difficulty-btn {
   flex: 1;
   padding: 16rpx 0;
-  background: #f8f9fa;
-  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12rpx;
   font-size: 26rpx;
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
   transition: all 0.2s ease;
 }
@@ -133,8 +134,8 @@
 .menu-btn {
   width: 100%;
   padding: 20rpx;
-  background: #f8f9fa;
-  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12rpx;
   display: flex;
   align-items: center;
@@ -148,28 +149,29 @@
 }
 
 .menu-btn:active {
-  background: #e9ecef;
+  background: rgba(255, 255, 255, 0.2);
   transform: scale(0.98);
 }
 
 .menu-btn.active {
-  background: linear-gradient(145deg, #87CEEB, #ADD8E6);
-  color: #4A4A4A;
-  border-color: #87CEEB;
-  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
+  background: linear-gradient(145deg, #1E90FF, #4682B4);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
 }
 
 .menu-btn.active .menu-btn-text {
-  color: #4A4A4A;
+  color: white;
 }
 
 .menu-btn-icon {
   font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .menu-btn-text {
   font-size: 28rpx;
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
   flex: 1;
   text-align: center;
   font-weight: 500;

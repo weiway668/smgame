@@ -234,8 +234,8 @@ class MazeGenerator {
         timeBonus: 2000
       },
       hard: {
-        width: 25,
-        height: 17,
+        width: 17,
+        height: 25,
         name: '困难',
         color: '#F44336',
         timeBonus: 3000

@@ -47,7 +47,7 @@ Page({
     difficulties: [
       { value: 'easy', label: '简单', width: 11, height: 11 },
       { value: 'medium', label: '中等', width: 15, height: 15 },
-      { value: 'hard', label: '困难', width: 25, height: 17 }
+      { value: 'hard', label: '困难', width: 17, height: 25 }
     ],
     
     // 进阶模式

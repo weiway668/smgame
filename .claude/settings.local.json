@@ -6,7 +6,8 @@
       "Bash(git branch:*)",
       "Bash(touch:*)",
       "Bash(git commit:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

@@ -220,19 +220,22 @@ class MazeGenerator {
   static getDifficultyConfig(difficulty) {
     const configs = {
       easy: {
-        size: 11,
+        width: 11,
+        height: 11,
         name: '简单',
         color: '#4CAF50',
         timeBonus: 1000
       },
       medium: {
-        size: 15,
+        width: 15,
+        height: 15,
         name: '中等',
         color: '#FF9800',
         timeBonus: 2000
       },
       hard: {
-        size: 21,
+        width: 25,
+        height: 17,
         name: '困难',
         color: '#F44336',
         timeBonus: 3000

@@ -21,6 +21,8 @@ Page({
     // 迷宫数据
     maze: [],
     mazeSize: 11,
+    mazeWidth: 11,
+    mazeHeight: 11,
     cellSize: 30,
     
     // 玩家位置
@@ -43,9 +45,9 @@ Page({
     
     // 难度选择
     difficulties: [
-      { value: 'easy', label: '简单', size: 11 },
-      { value: 'medium', label: '中等', size: 15 },
-      { value: 'hard', label: '困难', size: 21 }
+      { value: 'easy', label: '简单', width: 11, height: 11 },
+      { value: 'medium', label: '中等', width: 15, height: 15 },
+      { value: 'hard', label: '困难', width: 25, height: 17 }
     ],
     
     // 进阶模式
@@ -161,7 +163,7 @@ Page({
     const screenHeight = systemInfo.windowHeight;
     
     // 根据难度动态调整可用空间
-    const { mazeSize, difficulty } = this.data;
+    const { mazeWidth, mazeHeight, difficulty } = this.data;
     let padding, maxHeight;
     
     if (difficulty === 'easy') {
@@ -181,9 +183,9 @@ Page({
     const maxCanvasWidth = screenWidth - padding;
     const maxCanvasHeight = maxHeight;
     
-    // 计算单元格大小
-    const cellWidth = Math.floor(maxCanvasWidth / mazeSize);
-    const cellHeight = Math.floor(maxCanvasHeight / mazeSize);
+    // 计算单元格大小（支持长方形）
+    const cellWidthByWidth = Math.floor(maxCanvasWidth / mazeWidth);
+    const cellHeightByHeight = Math.floor(maxCanvasHeight / mazeHeight);
     
     // 设置最小和最大单元格尺寸
     let minCellSize, maxCellSize;
@@ -194,16 +196,17 @@ Page({
       minCellSize = 20;
       maxCellSize = 30;
     } else {
-      minCellSize = 15;
-      maxCellSize = 25;
+      // 困难模式：提升最小尺寸以改善操作体验
+      minCellSize = 18;
+      maxCellSize = 28;
     }
     
-    // 选择合适的单元格大小
-    const cellSize = Math.max(minCellSize, Math.min(cellWidth, cellHeight, maxCellSize));
+    // 选择合适的单元格大小（确保长方形适配）
+    const cellSize = Math.max(minCellSize, Math.min(cellWidthByWidth, cellHeightByHeight, maxCellSize));
     
-    // 计算实际画布尺寸
-    const canvasWidth = cellSize * mazeSize;
-    const canvasHeight = cellSize * mazeSize;
+    // 计算实际画布尺寸（支持长方形）
+    const canvasWidth = cellSize * mazeWidth;
+    const canvasHeight = cellSize * mazeHeight;
     
     this.setData({
       canvasWidth: canvasWidth,
@@ -275,18 +278,20 @@ Page({
   // 生成迷宫
   generateMaze() {
     const config = MazeGenerator.getDifficultyConfig(this.data.difficulty);
-    this.mazeGenerator = new MazeGenerator(config.size, config.size);
+    this.mazeGenerator = new MazeGenerator(config.width, config.height);
     const maze = this.mazeGenerator.generate();
     
     // 找到起点
     const start = this.mazeGenerator.findCell(2);
     
     // 计算单元格大小，确保迷宫完全填充画布
-    const cellSize = Math.floor(this.data.canvasWidth / config.size);
+    const cellSize = Math.floor(this.data.canvasWidth / config.width);
     
     this.setData({
       maze: maze,
-      mazeSize: config.size,
+      mazeWidth: config.width,
+      mazeHeight: config.height,
+      mazeSize: Math.max(config.width, config.height), // 保持兼容性
       cellSize: cellSize,
       playerX: start.x,
       playerY: start.y,
@@ -728,7 +733,9 @@ Page({
       const config = MazeGenerator.getDifficultyConfig(nextDifficulty);
       this.setData({
         difficulty: nextDifficulty,
-        mazeSize: config.size
+        mazeSize: Math.max(config.width, config.height),
+        mazeWidth: config.width,
+        mazeHeight: config.height
       });
       
       // 重新计算Canvas尺寸
@@ -1106,10 +1113,10 @@ Page({
   
   // 寻找路径并自动移动
   findAndMove(targetX, targetY) {
-    const { playerX, playerY, maze, mazeSize } = this.data;
+    const { playerX, playerY, maze, mazeWidth, mazeHeight } = this.data;
     
     // 检查目标是否在迷宫范围内
-    if (targetX < 0 || targetX >= mazeSize || targetY < 0 || targetY >= mazeSize) {
+    if (targetX < 0 || targetX >= mazeWidth || targetY < 0 || targetY >= mazeHeight) {
       return;
     }
     
@@ -1324,7 +1331,9 @@ Page({
     const config = MazeGenerator.getDifficultyConfig(difficulty);
     this.setData({
       difficulty: difficulty,
-      mazeSize: config.size
+      mazeSize: Math.max(config.width, config.height),
+      mazeWidth: config.width,
+      mazeHeight: config.height
     });
     
     // 重新计算Canvas尺寸

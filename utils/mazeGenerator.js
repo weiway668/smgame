@@ -22,21 +22,79 @@ class MazeGenerator {
     }
   }
 
-  // 生成迷宫
+  // 生成迷宫，并确保其具有足够的复杂度
   generate() {
-    this.initMaze();
-    
-    // 使用递归回溯算法生成迷宫
-    this.carvePath(1, 1);
-    
-    // 设置起点和终点
-    this.maze[1][1] = 2; // 起点
-    this.maze[this.height - 2][this.width - 2] = 3; // 终点
-    
-    // 创建额外的路径，使迷宫更有趣
-    this.createLoops();
-    
+    let solutionPath;
+    // 设定最小路径长度门槛，保证迷宫具有一定挑战性。
+    // 这里我们取宽高之和的80%作为一个合理的阈值。
+    const minPathLength = Math.floor((this.width + this.height) * 0.8);
+    let attempts = 0; // 防止无限循环
+
+    // 循环生成迷宫，直到满足所有难度要求
+    do {
+      this.initMaze();
+      
+      // 使用递归回溯算法生成迷宫
+      this.carvePath(1, 1);
+      
+      // 设置起点和终点
+      this.maze[1][1] = 2; // 起点
+      this.maze[this.height - 2][this.width - 2] = 3; // 终点
+      
+      // 创建额外的路径，使迷宫更有趣
+      this.createLoops();
+
+      // 寻找最短路径以校验难度
+      solutionPath = this.findSolution();
+      
+      attempts++;
+      // 添加一个尝试次数上限，以防在某些极端情况下发生无限循环
+      if (attempts > 20) {
+        console.warn('Maze generation exceeded max attempts. Using last generated maze.');
+        break;
+      }
+
+    } while (
+      !solutionPath ||                               // 保证有解
+      solutionPath.length < minPathLength ||         // 保证路径够长
+      this.hasStraightThroughPath()                  // 保证没有横/竖直通路径
+    );
+
+    this.solution = solutionPath; // 缓存找到的路径，可用于提示功能
     return this.maze;
+  }
+
+  // 检查是否存在横穿或竖穿的无障碍路径
+  hasStraightThroughPath() {
+    // 检查行 (从y=1到height-2)
+    for (let y = 1; y < this.height - 1; y++) {
+      let isRowClear = true;
+      for (let x = 1; x < this.width - 1; x++) {
+        if (this.maze[y][x] === 1) { // 1表示墙
+          isRowClear = false;
+          break;
+        }
+      }
+      if (isRowClear) {
+        return true; // 发现了一条横向直通路径
+      }
+    }
+
+    // 检查列 (从x=1到width-2)
+    for (let x = 1; x < this.width - 1; x++) {
+      let isColClear = true;
+      for (let y = 1; y < this.height - 1; y++) {
+        if (this.maze[y][x] === 1) { // 1表示墙
+          isColClear = false;
+          break;
+        }
+      }
+      if (isColClear) {
+        return true; // 发现了一条纵向直通路径
+      }
+    }
+
+    return false; // 没有发现直通路径
   }
 
   // 递归回溯算法雕刻路径
@@ -70,40 +128,24 @@ class MazeGenerator {
     }
   }
 
-  // 创建循环路径
+  // 创建循环路径，增加迷宫复杂度和可玩性
   createLoops() {
-    const loopCount = Math.floor(this.width * this.height / 100);
+    // 增加破墙数量，将除数从100减小到30，以创造更多路径
+    const loopsToCreate = Math.floor((this.width * this.height) / 30);
     let created = 0;
-    
-    for (let attempt = 0; attempt < loopCount * 10 && created < loopCount; attempt++) {
-      const x = 1 + Math.floor(Math.random() * ((this.width - 2) / 2)) * 2;
-      const y = 1 + Math.floor(Math.random() * ((this.height - 2) / 2)) * 2;
-      
-      // 检查是否可以安全地打通墙壁
-      if (this.maze[y][x] === 1 && this.canBreakWall(x, y)) {
+
+    // 增加尝试次数以确保能创建足够多的循环
+    for (let attempt = 0; attempt < loopsToCreate * 5 && created < loopsToCreate; attempt++) {
+      // 随机选择一个非边界点（x和y都在1到width/height-2之间）
+      const x = Math.floor(Math.random() * (this.width - 2)) + 1;
+      const y = Math.floor(Math.random() * (this.height - 2)) + 1;
+
+      // 如果选中的点是墙(1)，就把它变成路(0)
+      if (this.maze[y][x] === 1) {
         this.maze[y][x] = 0;
         created++;
       }
     }
-  }
-
-  // 检查是否可以打通墙壁
-  canBreakWall(x, y) {
-    let pathCount = 0;
-    const neighbors = [[0, -1], [1, 0], [0, 1], [-1, 0]];
-    
-    for (let [dx, dy] of neighbors) {
-      const nx = x + dx;
-      const ny = y + dy;
-      if (ny >= 0 && ny < this.height && nx >= 0 && nx < this.width) {
-        if (this.maze[ny][nx] === 0 || this.maze[ny][nx] === 2 || this.maze[ny][nx] === 3) {
-          pathCount++;
-        }
-      }
-    }
-    
-    // 只有当恰好连接两条路径时才打通
-    return pathCount === 2;
   }
 
   // 检查单元格是否有效

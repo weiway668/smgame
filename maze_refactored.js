@@ -1,19 +1,19 @@
 // pages/maze/maze.js (WXML Refactored Version)
-// 最终版本
+// 最终版本 - 增加了时间限制和游戏结束功能
 
 const MazeGenerator = require('../../utils/mazeGenerator.js');
 
 // 关卡配置 (共20关)
 const LEVELS = [
-  { width: 11, height: 11 }, { width: 11, height: 13 }, { width: 13, height: 13 }, { width: 13, height: 15 }, { width: 15, height: 15 },
-  { width: 15, height: 17 }, { width: 17, height: 17 }, { width: 17, height: 19 }, { width: 19, height: 19 }, { width: 19, height: 21 },
-  { width: 21, height: 21 }, { width: 21, height: 23 }, { width: 23, height: 23 }, { width: 23, height: 25 }, { width: 25, height: 25 },
-  { width: 25, height: 27 }, { width: 27, height: 27 }, { width: 27, height: 29 }, { width: 29, height: 29 }, { width: 29, height: 31 },
+  { width: 11, height: 11, timeLimit: 45 }, { width: 11, height: 13, timeLimit: 50 }, { width: 13, height: 13, timeLimit: 60 }, { width: 13, height: 15, timeLimit: 70 }, { width: 15, height: 15, timeLimit: 80 },
+  { width: 15, height: 17, timeLimit: 90 }, { width: 17, height: 17, timeLimit: 100 }, { width: 17, height: 19, timeLimit: 120 }, { width: 19, height: 19, timeLimit: 140 }, { width: 19, height: 21, timeLimit: 160 },
+  { width: 21, height: 21, timeLimit: 180 }, { width: 21, height: 23, timeLimit: 200 }, { width: 23, height: 23, timeLimit: 220 }, { width: 23, height: 25, timeLimit: 250 }, { width: 25, height: 25, timeLimit: 280 },
+  { width: 25, height: 27, timeLimit: 300 }, { width: 27, height: 27, timeLimit: 330 }, { width: 27, height: 29, timeLimit: 360 }, { width: 29, height: 29, timeLimit: 400 }, { width: 29, height: 31, timeLimit: 440 },
 ];
 
 Page({
   data: {
-    gameStatus: 'ready', // ready, playing, win
+    gameStatus: 'ready', // ready, playing, win, lose
     currentLevel: 1,
     allLevelsCompleted: false,
     maze: [],
@@ -23,6 +23,7 @@ Page({
     playerY: 1,
     steps: 0,
     time: 0,
+    timeLimit: 45,
     visitedCells: [],
     settings: {},
     playerStyle: 'top: 0; left: 0;'
@@ -30,6 +31,7 @@ Page({
 
   mazeGenerator: null,
   timer: null,
+  isMoving: false,
 
   onLoad(options) {
     this.loadSettings();
@@ -67,6 +69,7 @@ Page({
       maze: maze,
       mazeWidth: levelConf.width,
       mazeHeight: levelConf.height,
+      timeLimit: levelConf.timeLimit,
       playerX: start.x,
       playerY: start.y,
       steps: 0,
@@ -101,7 +104,13 @@ Page({
     }, () => {
       if (this.timer) clearInterval(this.timer);
       this.timer = setInterval(() => {
-        this.setData({ time: this.data.time + 1 });
+        const newTime = this.data.time + 1;
+        if (newTime >= this.data.timeLimit) {
+          clearInterval(this.timer);
+          this.loseGame();
+        } else {
+          this.setData({ time: newTime });
+        }
       }, 1000);
       if (this.data.settings.soundEnabled) this.playSound('start');
       if (callback) callback();
@@ -109,6 +118,7 @@ Page({
   },
 
   restartGame() {
+    if (this.isMoving) return;
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
     this.generateMaze();
@@ -122,10 +132,13 @@ Page({
     this.setData({ currentLevel: next });
     wx.setStorageSync('mazePlayerLevel', next);
     this.generateMaze();
+    setTimeout(() => {
+      this.startGame();
+    }, 50);
   },
 
   movePlayer(direction) {
-    if (this.data.gameStatus === 'win') return;
+    if (this.data.gameStatus === 'win' || this.data.gameStatus === 'lose') return;
     
     const performMove = () => {
       const { playerX, playerY, maze } = this.data;
@@ -165,17 +178,17 @@ Page({
   },
   
   touchStart(e) {
+    if (this.isMoving) return;
     this.touchStartX = e.touches[0].clientX;
     this.touchStartY = e.touches[0].clientY;
   },
 
   touchEnd(e) {
-    if (this.data.gameStatus === 'win') return;
+    if (this.isMoving || this.data.gameStatus === 'win' || this.data.gameStatus === 'lose') return;
     const deltaX = e.changedTouches[0].clientX - this.touchStartX;
     const deltaY = e.changedTouches[0].clientY - this.touchStartY;
 
     if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-      this.handleTap(e);
       return;
     }
 
@@ -187,7 +200,8 @@ Page({
   },
 
   handleTap(e) {
-    const touch = e.changedTouches[0];
+    if (this.isMoving || this.data.gameStatus === 'win' || this.data.gameStatus === 'lose') return;
+    const touch = e.changedTouches[0] || e.touches[0];
     if (!touch) return;
 
     wx.createSelectorQuery().select('.maze-grid').boundingClientRect(rect => {
@@ -196,35 +210,95 @@ Page({
       const touchX = touch.clientX - rect.left;
       const touchY = touch.clientY - rect.top;
 
-      const { mazeWidth, mazeHeight } = this.data;
+      const { mazeWidth, mazeHeight, playerX, playerY, maze } = this.data;
       const cellWidth = rect.width / mazeWidth;
       const cellHeight = rect.height / mazeHeight;
 
       const targetX = Math.floor(touchX / cellWidth);
       const targetY = Math.floor(touchY / cellHeight);
 
-      const { playerX, playerY } = this.data;
+      if (maze[targetY][targetX] === 1) return;
+      if (targetX === playerX && targetY === playerY) return;
 
-      const isAdjacent = (Math.abs(targetX - playerX) === 1 && targetY === playerY) ||
-                         (Math.abs(targetY - playerY) === 1 && targetX === playerX);
-
-      if (isAdjacent) {
-        let direction = null;
-        if (targetX > playerX) direction = 'right';
-        else if (targetX < playerX) direction = 'left';
-        else if (targetY > playerY) direction = 'down';
-        else if (targetY < playerY) direction = 'up';
-        
-        if (direction) {
-          this.movePlayer(direction);
+      if (targetX === playerX || targetY === playerY) {
+        if (this.isPathClear(playerX, playerY, targetX, targetY)) {
+          this.moveAlongPath(targetX, targetY);
+        }
+      } else {
+        const isAdjacent = (Math.abs(targetX - playerX) === 1 && targetY === playerY) ||
+                           (Math.abs(targetY - playerY) === 1 && targetX === playerX);
+        if (isAdjacent) {
+          let direction = null;
+          if (targetX > playerX) direction = 'right';
+          else if (targetX < playerX) direction = 'left';
+          else if (targetY > playerY) direction = 'down';
+          else if (targetY < playerY) direction = 'up';
+          if (direction) this.movePlayer(direction);
         }
       }
     }).exec();
   },
 
+  isPathClear(x1, y1, x2, y2) {
+    const { maze } = this.data;
+    if (x1 === x2) {
+      const startY = Math.min(y1, y2);
+      const endY = Math.max(y1, y2);
+      for (let y = startY + 1; y < endY; y++) {
+        if (maze[y][x1] === 1) return false;
+      }
+    } else if (y1 === y2) {
+      const startX = Math.min(x1, x2);
+      const endX = Math.max(x1, x2);
+      for (let x = startX + 1; x < endX; x++) {
+        if (maze[y1][x] === 1) return false;
+      }
+    }
+    return true;
+  },
+
+  moveAlongPath(targetX, targetY) {
+    const { playerX, playerY } = this.data;
+    const steps = [];
+    if (targetX === playerX) {
+      const direction = targetY > playerY ? 'down' : 'up';
+      const distance = Math.abs(targetY - playerY);
+      for (let i = 0; i < distance; i++) steps.push(direction);
+    } else if (targetY === playerY) {
+      const direction = targetX > playerX ? 'right' : 'left';
+      const distance = Math.abs(targetX - playerX);
+      for (let i = 0; i < distance; i++) steps.push(direction);
+    }
+
+    if (steps.length > 0) {
+      this.executeMoveSequence(steps);
+    }
+  },
+
+  executeMoveSequence(steps) {
+    if (this.isMoving) return;
+    this.isMoving = true;
+
+    const move = () => {
+      if (steps.length === 0 || (this.data.gameStatus !== 'playing' && this.data.gameStatus !== 'ready')) {
+        this.isMoving = false;
+        return;
+      }
+      const direction = steps.shift();
+      this.movePlayer(direction);
+      if (this.data.gameStatus !== 'playing') {
+        this.isMoving = false;
+        return;
+      }
+      setTimeout(move, 100);
+    };
+    move();
+  },
+
   winGame() {
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
+    this.isMoving = false;
     
     let nextLevel = this.data.currentLevel + 1;
     let allLevelsCompleted = nextLevel > LEVELS.length;
@@ -241,6 +315,13 @@ Page({
     
     if (this.data.settings.soundEnabled) this.playSound('victory');
     if (this.data.settings.vibrationEnabled) wx.vibrateLong();
+  },
+
+  loseGame() {
+    this.isMoving = false;
+    this.setData({ gameStatus: 'lose' });
+    if (this.data.settings.soundEnabled) this.playSound('gameover');
+    if (this.data.settings.vibrationEnabled) wx.vibrateShort({ type: 'heavy' });
   },
 
   playSound(soundName) {

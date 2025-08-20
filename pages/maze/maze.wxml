@@ -25,6 +25,14 @@
 
       <!-- 玩家 -->
       <view class="player" style="{{playerStyle}}; width: {{100/mazeWidth}}%; height: {{100/mazeHeight}}%;"></view>
+
+      <!-- 路径标记 -->
+      <view 
+        class="trail-cell"
+        wx:for="{{visitedCells}}"
+        wx:key="*this"
+        style="top: {{(item[1] / mazeHeight) * 100}}%; left: {{(item[0] / mazeWidth) * 100}}%; width: {{100/mazeWidth}}%; height: {{100/mazeHeight}}%;"
+      ></view>
     </view>
   </view>
 
@@ -55,14 +63,23 @@
     </view>
   </view>
 
+  <view class="game-overlay" wx:if="{{gameStatus === 'lose'}}">
+    <view class="overlay-content">
+      <text class="overlay-title">⌛️ 时间到！</text>
+      <text class="overlay-desc">再快一点就成功啦！</text>
+      <button class="btn-restart" bindtap="restartGame">重新挑战</button>
+      <button class="btn-back" bindtap="backToHome">返回主页</button>
+    </view>
+  </view>
+
   <!-- 底部统计与控制 -->
   <view class="bottom-bar">
     <view class="stats-container">
         <view class="stat-item"><text class="stat-icon">👣</text> {{steps}}</view>
-        <view class="stat-item"><text class="stat-icon">⏱</text> {{time}}s</view>
+        <view class="stat-item"><text class="stat-icon">⏱</text> {{time}} / {{timeLimit}}s</view>
     </view>
     <view class="restart-button-wrapper">
-        <button class="restart-btn" bindtap="restartGame">↻</button>
+        <view class="restart-btn" bindtap="restartGame">↻</view>
     </view>
   </view>
 </view>

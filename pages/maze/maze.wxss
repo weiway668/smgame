@@ -112,17 +112,27 @@
 }
 
 .restart-btn {
-  width: 100rpx;
-  height: 100rpx;
+  width: 80rpx;
+  height: 80rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  font-size: 50rpx;
+  font-size: 40rpx;
   color: #333;
   box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
+  padding: 0; /* 重置内边距确保圆形 */
+  line-height: 1; /* 确保图标垂直居中 */
+}
+
+/* 走过的路径标记 */
+.trail-cell {
+  position: absolute;
+  background-color: rgba(30, 144, 255, 0.2);
+  z-index: 5;
+  pointer-events: none; /* 确保标记层不会阻挡下方的触摸事件 */
 }
 
 /* 覆盖层样式 */
@@ -165,15 +175,32 @@
   margin-bottom: 50rpx;
 }
 
+.btn-start, .btn-next, .btn-restart, .btn-back {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 20rpx 60rpx;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin: 10rpx;
+  width: 80%;
+}
+
 .btn-start, .btn-next {
   background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #333;
-  border: none;
-  padding: 24rpx 80rpx;
-  border-radius: 50rpx;
-  font-size: 34rpx;
-  font-weight: bold;
   box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.4);
+}
+
+.btn-restart {
+  background: linear-gradient(135deg, #1E90FF, #4682B4);
+  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
+}
+
+.btn-back {
+  background: linear-gradient(135deg, #87CEEB, #ADD8E6);
+  color: #333;
+  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
 }
 
 .win-stats {

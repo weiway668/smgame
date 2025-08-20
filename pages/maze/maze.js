@@ -214,6 +214,10 @@ Page({
       const targetX = Math.floor(touchX / cellWidth);
       const targetY = Math.floor(touchY / cellHeight);
 
+      if (targetY < 0 || targetY >= this.data.mazeHeight || targetX < 0 || targetX >= this.data.mazeWidth) {
+        return;
+      }
+
       if (maze[targetY][targetX] === 1) return;
       if (targetX === playerX && targetY === playerY) return;
 

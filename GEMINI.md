@@ -6,6 +6,8 @@ This file provides guidance to GEMINI Code (GEMINI.ai/code) when working with co
 
 小梦想游戏是一个微信小程序游戏平台，包含迷宫和消消乐两个益智游戏，专为6-12岁儿童设计。
 
+**所有与此项目相关的回复、代码注释、文档说明都必须使用中文。这是项目的强制性要求。**
+
 ## 项目结构
 
 ```

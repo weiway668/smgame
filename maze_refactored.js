@@ -1,5 +1,5 @@
 // pages/maze/maze.js (WXML Refactored Version)
-// 最终版本 - 增加了时间限制和游戏结束功能
+// 最终版本 - 增加了关闭弹窗查看答案的功能
 
 const MazeGenerator = require('../../utils/mazeGenerator.js');
 
@@ -14,6 +14,7 @@ const LEVELS = [
 Page({
   data: {
     gameStatus: 'ready', // ready, playing, win, lose
+    isOverlayVisible: false, // 控制弹窗显示
     currentLevel: 1,
     allLevelsCompleted: false,
     maze: [],
@@ -25,6 +26,7 @@ Page({
     time: 0,
     timeLimit: 45,
     visitedCells: [],
+    solutionPath: [],
     settings: {},
     playerStyle: 'top: 0; left: 0;'
   },
@@ -75,7 +77,9 @@ Page({
       steps: 0,
       time: 0,
       gameStatus: 'ready',
+      isOverlayVisible: true, // 准备界面显示
       visitedCells: [],
+      solutionPath: [],
       allLevelsCompleted: this.data.currentLevel > LEVELS.length
     });
     
@@ -98,6 +102,7 @@ Page({
     }
     this.setData({ 
       gameStatus: 'playing', 
+      isOverlayVisible: false, // 关闭弹窗
       time: 0, 
       steps: 0, 
       visitedCells: [[this.data.playerX, this.data.playerY]] 
@@ -138,42 +143,34 @@ Page({
   },
 
   movePlayer(direction) {
-    if (this.data.gameStatus === 'win' || this.data.gameStatus === 'lose') return;
+    if (this.data.gameStatus !== 'playing') return;
     
-    const performMove = () => {
-      const { playerX, playerY, maze } = this.data;
-      let newX = playerX, newY = playerY;
-      
-      switch (direction) {
-        case 'up': newY--; break;
-        case 'down': newY++; break;
-        case 'left': newX--; break;
-        case 'right': newX++; break;
+    const { playerX, playerY, maze } = this.data;
+    let newX = playerX, newY = playerY;
+    
+    switch (direction) {
+      case 'up': newY--; break;
+      case 'down': newY++; break;
+      case 'left': newX--; break;
+      case 'right': newX++; break;
+    }
+    
+    if (this.mazeGenerator.isValidMove(newX, newY)) {
+      const visitedCells = this.data.visitedCells;
+      if (!visitedCells.some(([x, y]) => x === newX && y === newY)) {
+        visitedCells.push([newX, newY]);
       }
       
-      if (this.mazeGenerator.isValidMove(newX, newY)) {
-        const visitedCells = this.data.visitedCells;
-        if (!visitedCells.some(([x, y]) => x === newX && y === newY)) {
-          visitedCells.push([newX, newY]);
-        }
-        
-        this.setData({ playerX: newX, playerY: newY, steps: this.data.steps + 1, visitedCells });
-        this.updatePlayerStyle(newX, newY);
-        
-        if (this.data.settings.soundEnabled) this.playSound('move');
-        if (this.data.settings.vibrationEnabled) wx.vibrateShort({ type: 'light' });
-        
-        if (maze[newY][newX] === 3) this.winGame();
-      } else {
-        if (this.data.settings.soundEnabled) this.playSound('wall');
-        if (this.data.settings.vibrationEnabled) wx.vibrateShort({ type: 'medium' });
-      }
-    };
-
-    if (this.data.gameStatus === 'ready') {
-      this.startGame(performMove);
+      this.setData({ playerX: newX, playerY: newY, steps: this.data.steps + 1, visitedCells });
+      this.updatePlayerStyle(newX, newY);
+      
+      if (this.data.settings.soundEnabled) this.playSound('move');
+      if (this.data.settings.vibrationEnabled) wx.vibrateShort({ type: 'light' });
+      
+      if (maze[newY][newX] === 3) this.winGame();
     } else {
-      performMove();
+      if (this.data.settings.soundEnabled) this.playSound('wall');
+      if (this.data.settings.vibrationEnabled) wx.vibrateShort({ type: 'medium' });
     }
   },
   
@@ -184,7 +181,7 @@ Page({
   },
 
   touchEnd(e) {
-    if (this.isMoving || this.data.gameStatus === 'win' || this.data.gameStatus === 'lose') return;
+    if (this.isMoving || this.data.gameStatus !== 'playing') return;
     const deltaX = e.changedTouches[0].clientX - this.touchStartX;
     const deltaY = e.changedTouches[0].clientY - this.touchStartY;
 
@@ -200,7 +197,7 @@ Page({
   },
 
   handleTap(e) {
-    if (this.isMoving || this.data.gameStatus === 'win' || this.data.gameStatus === 'lose') return;
+    if (this.isMoving || this.data.gameStatus !== 'playing') return;
     const touch = e.changedTouches[0] || e.touches[0];
     if (!touch) return;
 
@@ -280,7 +277,7 @@ Page({
     this.isMoving = true;
 
     const move = () => {
-      if (steps.length === 0 || (this.data.gameStatus !== 'playing' && this.data.gameStatus !== 'ready')) {
+      if (steps.length === 0 || this.data.gameStatus !== 'playing') {
         this.isMoving = false;
         return;
       }
@@ -309,6 +306,7 @@ Page({
     
     this.setData({ 
       gameStatus: 'win',
+      isOverlayVisible: true, // 显示胜利弹窗
       allLevelsCompleted: allLevelsCompleted,
       currentLevel: nextLevel 
     });
@@ -319,9 +317,18 @@ Page({
 
   loseGame() {
     this.isMoving = false;
-    this.setData({ gameStatus: 'lose' });
+    this.setData({ gameStatus: 'lose', isOverlayVisible: true }); // 显示失败弹窗
     if (this.data.settings.soundEnabled) this.playSound('gameover');
     if (this.data.settings.vibrationEnabled) wx.vibrateShort({ type: 'heavy' });
+  },
+
+  showSolution() {
+    if (!this.mazeGenerator) return;
+    const solution = this.mazeGenerator.findSolution();
+    this.setData({ 
+      solutionPath: solution,
+      isOverlayVisible: false // 关闭弹窗
+    });
   },
 
   playSound(soundName) {

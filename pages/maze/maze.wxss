@@ -135,6 +135,15 @@
   pointer-events: none; /* 确保标记层不会阻挡下方的触摸事件 */
 }
 
+/* 答案路径标记 */
+.solution-cell {
+  position: absolute;
+  background-color: rgba(255, 215, 0, 0.5); /* 半透明黄色 */
+  border-radius: 50%;
+  z-index: 4; /* 在足迹下方，但在道路上方 */
+  pointer-events: none;
+}
+
 /* 覆盖层样式 */
 .game-overlay {
   position: fixed;
@@ -201,6 +210,23 @@
   background: linear-gradient(135deg, #87CEEB, #ADD8E6);
   color: #333;
   box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
+  margin-top: 30rpx; /* 增加顶部间距 */
+}
+
+/* 走过的路径标记 */
+.trail-cell {
+  position: absolute;
+  background-color: rgba(30, 144, 255, 0.2);
+  z-index: 5;
+  pointer-events: none; /* 确保标记层不会阻挡下方的触摸事件 */
+}
+
+/* 答案路径标记 */
+.solution-cell {
+  position: absolute;
+  background-color: rgba(255, 215, 0, 0.5); /* 半透明黄色 */
+  z-index: 99; /* 提高层级，确保可见 */
+  pointer-events: none;
 }
 
 .win-stats {

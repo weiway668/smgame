@@ -33,11 +33,19 @@
         wx:key="*this"
         style="top: {{(item[1] / mazeHeight) * 100}}%; left: {{(item[0] / mazeWidth) * 100}}%; width: {{100/mazeWidth}}%; height: {{100/mazeHeight}}%;"
       ></view>
+
+      <!-- 答案路径 -->
+      <view 
+        class="solution-cell"
+        wx:for="{{solutionPath}}"
+        wx:key="*this"
+        style="top: {{(item[1] / mazeHeight) * 100}}%; left: {{(item[0] / mazeWidth) * 100}}%; width: {{100/mazeWidth}}%; height: {{100/mazeHeight}}%;"
+      ></view>
     </view>
   </view>
 
   <!-- 游戏状态覆盖层 -->
-  <view class="game-overlay" wx:if="{{gameStatus === 'ready'}}">
+    <view class="game-overlay" wx:if="{{gameStatus === 'ready' && isOverlayVisible}}">
     <view class="overlay-content">
       <text class="overlay-title">第 {{currentLevel}} 关</text>
       <text class="overlay-desc">滑动屏幕，走出迷宫</text>
@@ -45,7 +53,7 @@
     </view>
   </view>
   
-  <view class="game-overlay" wx:if="{{gameStatus === 'win'}}">
+  <view class="game-overlay" wx:if="{{gameStatus === 'win' && isOverlayVisible}}">
     <view class="overlay-content">
       <block wx:if="{{allLevelsCompleted}}">
         <text class="overlay-title">🎉 恭喜通关！</text>
@@ -63,12 +71,12 @@
     </view>
   </view>
 
-  <view class="game-overlay" wx:if="{{gameStatus === 'lose'}}">
+  <view class="game-overlay" wx:if="{{gameStatus === 'lose' && isOverlayVisible}}">
     <view class="overlay-content">
       <text class="overlay-title">⌛️ 时间到！</text>
       <text class="overlay-desc">再快一点就成功啦！</text>
       <button class="btn-restart" bindtap="restartGame">重新挑战</button>
-      <button class="btn-back" bindtap="backToHome">返回主页</button>
+      <button class="btn-back" bindtap="showSolution">查看答案</button>
     </view>
   </view>
 

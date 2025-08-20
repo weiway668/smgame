@@ -1,142 +1,68 @@
 <!--pages/maze/maze.wxml-->
-<!-- 迷宫游戏页面 -->
-
+<!-- WXML渲染版本 -->
 <view class="container">
-  <!-- 游戏画布 - 全屏显示 -->
-  <view class="game-canvas-wrapper">
-    <!-- Canvas容器，确保相对定位 -->
-    <view class="canvas-container" style="position: relative; width: {{canvasWidth}}px; height: {{canvasHeight}}px; z-index: 1;">
-      <canvas 
-        type="2d"
-        id="mazeCanvas"
-        class="game-canvas"
-        style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
-      ></canvas>
-      
-      <!-- 透明覆盖层处理所有交互，确保完全覆盖Canvas -->
-      <view 
-        class="touch-layer"
-        style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
-        bindtap="handleTap"
-        bindtouchstart="touchStart"
-        bindtouchend="touchEnd"
-      ></view>
-    </view>
-    
-    <!-- 悬浮统计信息 -->
-    <view class="floating-stats">
-      <view class="floating-stat-item left">
-        <text class="stat-icon">👣</text>
-        <text class="stat-value">{{steps}}</text>
+  <view class="top-bar">
+    <view class="level-indicator">第 {{currentLevel > 20 ? 20 : currentLevel}} 关</view>
+  </view>
+
+  <!-- 游戏区域 -->
+  <view class="game-wrapper"
+    bindtouchstart="touchStart"
+    bindtouchend="touchEnd"
+    bindtap="handleTap"
+  >
+    <view class="maze-grid" style="width: 90vmin; height: 90vmin;">
+      <!-- 迷宫行 -->
+      <view class="maze-row" wx:for="{{maze}}" wx:for-item="row" wx:key="index">
+        <!-- 迷宫单元格 (使用wx:if保证渲染正确) -->
+        <block wx:for="{{row}}" wx:for-item="cell" wx:key="index">
+          <view wx:if="{{cell === 1}}" class="maze-cell wall"></view>
+          <view wx:elif="{{cell === 2}}" class="maze-cell start"></view>
+          <view wx:elif="{{cell === 3}}" class="maze-cell end"></view>
+          <view wx:else class="maze-cell path"></view>
+        </block>
       </view>
-      <view class="floating-stat-item right">
-        <text class="stat-icon">⏱</text>
-        <text class="stat-value">{{time}}s</text>
-      </view>
+
+      <!-- 玩家 -->
+      <view class="player" style="{{playerStyle}}; width: {{100/mazeWidth}}%; height: {{100/mazeHeight}}%;"></view>
     </view>
-    
-    <!-- 游戏状态覆盖层 - 移到canvas-container之后确保显示在上层 -->
-    <view class="game-overlay" wx:if="{{gameStatus === 'ready'}}">
-      <view class="overlay-content">
-        <text class="overlay-title">准备开始</text>
-        <text class="overlay-desc">点击目标位置或滑动移动</text>
-        <button class="btn-start" bindtap="startGame">开始游戏</button>
-      </view>
+  </view>
+
+  <!-- 游戏状态覆盖层 -->
+  <view class="game-overlay" wx:if="{{gameStatus === 'ready'}}">
+    <view class="overlay-content">
+      <text class="overlay-title">第 {{currentLevel}} 关</text>
+      <text class="overlay-desc">滑动屏幕，走出迷宫</text>
+      <button class="btn-start" bindtap="startGame">开始挑战</button>
     </view>
-    
-    <view class="game-overlay" wx:if="{{gameStatus === 'paused'}}">
-      <view class="overlay-content">
-        <text class="overlay-title">游戏暂停</text>
-        <button class="btn-resume" bindtap="resumeGame">继续游戏</button>
-        <button class="btn-restart" bindtap="restartGame">重新开始</button>
-      </view>
-    </view>
-    
-    <!-- 游戏胜利覆盖层 - 移到canvas-container之后确保显示在上层 -->
-    <view class="game-overlay" wx:if="{{gameStatus === 'win'}}">
-      <view class="overlay-content">
+  </view>
+  
+  <view class="game-overlay" wx:if="{{gameStatus === 'win'}}">
+    <view class="overlay-content">
+      <block wx:if="{{allLevelsCompleted}}">
         <text class="overlay-title">🎉 恭喜通关！</text>
-        <text class="overlay-desc">{{difficulty === 'easy' ? '简单' : difficulty === 'medium' ? '中等' : '困难'}}难度完成</text>
-        
+        <text class="overlay-desc">你已是真正的迷宫大师！</text>
+        <button class="btn-next" bindtap="nextLevel">从第一关开始</button>
+      </block>
+      <block wx:else>
+        <text class="overlay-title">🎉 第 {{currentLevel - 1}} 关完成！</text>
         <view class="win-stats">
           <text class="stat-line">✨ 步数：{{steps}} 步</text>
           <text class="stat-line">⏱ 用时：{{time}} 秒</text>
-          <text class="stat-line" wx:if="{{bestSteps && steps <= bestSteps}}">🏆 新纪录！</text>
         </view>
-        
-        <!-- 进阶模式按钮 -->
-        <block wx:if="{{progressionMode && difficulty !== 'hard'}}">
-          <text class="overlay-hint">准备好挑战更高难度了吗？</text>
-          <button class="btn-next" bindtap="nextLevel">
-            挑战{{difficulty === 'easy' ? '中等' : '困难'}}难度
-          </button>
-          <button class="btn-replay" bindtap="restartGame">重玩当前</button>
-        </block>
-        
-        <!-- 非进阶模式或最高难度按钮 -->
-        <block wx:else>
-          <text class="overlay-hint" wx:if="{{difficulty === 'hard'}}">你已征服最高难度！</text>
-          <button class="btn-next" bindtap="restartGame">再来一局</button>
-          <button class="btn-back" bindtap="backToMenu">返回主页</button>
-        </block>
-      </view>
+        <button class="btn-next" bindtap="nextLevel">下一关</button>
+      </block>
     </view>
   </view>
-</view>
 
-<!-- 浮动菜单按钮 -->
-<view class="menu-button {{menuOpen ? 'active' : ''}}" bindtap="toggleMenu">
-  <text class="menu-icon">⚙</text>
-</view>
-
-<!-- 菜单遮罩 -->
-<view class="menu-overlay" wx:if="{{menuOpen}}" bindtap="closeMenu"></view>
-
-<!-- 浮动菜单面板 -->
-<view class="menu-panel {{menuOpen ? 'open' : ''}}" wx:if="{{menuOpen}}">
-  <!-- 菜单内容 -->
-  <view class="menu-content">
-    <!-- 难度选择 -->
-    <view class="menu-section">
-      <text class="menu-label">难度选择</text>
-      <view class="difficulty-options">
-        <button 
-          wx:for="{{difficulties}}" 
-          wx:key="value"
-          class="difficulty-btn {{difficulty === item.value ? 'active' : ''}}"
-          bindtap="selectDifficulty"
-          data-difficulty="{{item.value}}"
-        >
-          {{item.label}}
-        </button>
-      </view>
+  <!-- 底部统计与控制 -->
+  <view class="bottom-bar">
+    <view class="stats-container">
+        <view class="stat-item"><text class="stat-icon">👣</text> {{steps}}</view>
+        <view class="stat-item"><text class="stat-icon">⏱</text> {{time}}s</view>
     </view>
-    
-    <!-- 游戏控制 -->
-    <view class="menu-section">
-      <button class="menu-btn" bindtap="restartGame">
-        <text class="menu-btn-icon">↻</text>
-        <text class="menu-btn-text">重新开始</text>
-      </button>
-      
-      <button 
-        class="menu-btn" 
-        bindtap="{{gameStatus === 'playing' ? 'pauseGame' : 'resumeGame'}}"
-        wx:if="{{gameStatus === 'playing' || gameStatus === 'paused'}}"
-      >
-        <text class="menu-btn-icon">{{gameStatus === 'playing' ? '⏸' : '▶'}}</text>
-        <text class="menu-btn-text">{{gameStatus === 'playing' ? '暂停游戏' : '继续游戏'}}</text>
-      </button>
-      
-      <button class="menu-btn {{showHint ? 'active' : ''}}" bindtap="toggleHint">
-        <text class="menu-btn-icon">💡</text>
-        <text class="menu-btn-text">{{showHint ? '隐藏提示' : '显示提示'}}</text>
-      </button>
-      
-      <button class="menu-btn {{progressionMode ? 'active' : ''}}" bindtap="toggleProgressionMode">
-        <text class="menu-btn-icon">📈</text>
-        <text class="menu-btn-text">{{progressionMode ? '进阶模式开' : '进阶模式关'}}</text>
-      </button>
+    <view class="restart-button-wrapper">
+        <button class="restart-btn" bindtap="restartGame">↻</button>
     </view>
   </view>
 </view>

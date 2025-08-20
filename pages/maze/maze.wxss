@@ -1,286 +1,153 @@
 /* pages/maze/maze.wxss */
-/* 迷宫游戏页面样式 */
+/* WXML渲染版本样式 */
 
 .container {
   height: 100vh;
   background: linear-gradient(180deg, #E6F2FF 0%, #FFFFFF 100%);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   padding: 0;
   overflow: hidden;
 }
 
-/* 浮动菜单按钮 */
-.menu-button {
-  position: fixed;
-  bottom: 40rpx;
-  right: 40rpx;
+.top-bar {
+  width: 100%;
+  padding: 20rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.level-indicator {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2c5f8d;
+  padding: 10rpx 30rpx;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 20rpx;
+  display: inline-block;
+}
+
+.game-wrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.maze-grid {
+  display: flex;
+  flex-direction: column;
+  background-color: #2C5F8D; /* Wall color as background */
+  border: 4rpx solid #2C5F8D;
+  border-radius: 16rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.maze-row {
+  display: flex;
+  flex: 1;
+}
+
+.maze-cell {
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.wall {
+  background-color: #2C5F8D;
+}
+
+.path {
+  background-color: #FFFFFF;
+}
+
+.start {
+  background: radial-gradient(circle, #87CEEB, #5F9FBF);
+}
+
+.end {
+  background: radial-gradient(circle, #FFD700, #FFA500);
+}
+
+.player {
+  position: absolute;
+  background-color: #1E90FF;
+  border-radius: 50%;
+  box-shadow: 0 0 10rpx rgba(30, 144, 255, 0.8);
+  transition: top 0.1s linear, left 0.1s linear;
+  z-index: 10;
+}
+
+/* 底部UI */
+.bottom-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 40rpx;
+  box-sizing: border-box;
+}
+
+.stats-container {
+  display: flex;
+  gap: 30rpx;
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 15rpx 30rpx;
+  border-radius: 20rpx;
+}
+
+.stat-icon {
+  margin-right: 8rpx;
+}
+
+.restart-button-wrapper {
+  display: flex;
+}
+
+.restart-btn {
   width: 100rpx;
   height: 100rpx;
-  background: linear-gradient(145deg, #1E90FF, #4682B4);
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6rpx 20rpx rgba(30, 144, 255, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  z-index: 200;
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  font-size: 50rpx;
+  color: #333;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
 }
 
-.menu-button:active {
-  transform: scale(0.95);
-}
-
-.menu-button.active {
-  background: linear-gradient(145deg, #4682B4, #5F9FBF);
-  transform: rotate(90deg);
-}
-
-.menu-icon {
-  color: white;
-  font-size: 36rpx;
-  font-weight: bold;
-}
-
-/* 浮动菜单面板 */
-.menu-panel {
-  position: fixed;
-  bottom: 160rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  max-width: 600rpx;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  border-radius: 20rpx;
-  border: none;
-  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.3);
-  z-index: 210;
-  animation: slideUp 0.3s ease forwards;
-  overflow: hidden;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20rpx);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-/* 菜单遮罩 */
-.menu-overlay {
+/* 覆盖层样式 */
+.game-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  z-index: 180;
-}
-
-/* 菜单内容 */
-.menu-content {
-  padding: 40rpx;
-}
-
-.menu-section {
-  margin-bottom: 24rpx;
-}
-
-.menu-section:last-child {
-  margin-bottom: 0;
-}
-
-.menu-label {
-  display: block;
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 12rpx;
-  font-weight: 500;
-}
-
-/* 难度选择按钮 */
-.difficulty-options {
-  display: flex;
-  gap: 10rpx;
-}
-
-.difficulty-btn {
-  flex: 1;
-  padding: 16rpx 0;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12rpx;
-  font-size: 26rpx;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.difficulty-btn.active {
-  background: linear-gradient(145deg, #1E90FF, #4682B4);
-  color: white;
-  border-color: #1E90FF;
-  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
-}
-
-/* 菜单按钮 */
-.menu-btn {
-  width: 100%;
-  padding: 20rpx;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12rpx;
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  margin-bottom: 12rpx;
-  transition: all 0.2s ease;
-}
-
-.menu-btn:last-child {
-  margin-bottom: 0;
-}
-
-.menu-btn:active {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(0.98);
-}
-
-.menu-btn.active {
-  background: linear-gradient(145deg, #1E90FF, #4682B4);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
-}
-
-.menu-btn.active .menu-btn-text {
-  color: white;
-}
-
-.menu-btn-icon {
-  font-size: 32rpx;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.menu-btn-text {
-  font-size: 28rpx;
-  color: rgba(255, 255, 255, 0.9);
-  flex: 1;
-  text-align: center;
-  font-weight: 500;
-}
-
-/* 悬浮统计信息 - 优化为更紧凑的角落显示 */
-.floating-stats {
-  position: absolute;
-  top: 10rpx;
-  left: 10rpx;
-  right: 10rpx;
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.floating-stat-item {
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-  padding: 8rpx 16rpx;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
-  border: 1rpx solid rgba(255, 255, 255, 0.1);
-}
-
-.floating-stat-item.left {
-  margin-right: auto;
-}
-
-.floating-stat-item.right {
-  margin-left: auto;
-}
-
-.stat-icon {
-  font-size: 20rpx;
-  filter: grayscale(0%);
-}
-
-.floating-stat-item .stat-value {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
-}
-
-/* 游戏画布区域 - 全屏显示 */
-.game-canvas-wrapper {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20rpx;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-}
-
-/* Canvas容器 - 确保有明确的z-index */
-.canvas-container {
-  position: relative;
-  z-index: 1;
-}
-
-.game-canvas {
-  position: relative;
-  background: #2C5F8D; /* 与迷寫墙壁颜色一致 */
-  border-radius: 16rpx;
-  box-shadow: 0 6rpx 20rpx rgba(44, 95, 141, 0.2);
-  border: 2rpx solid rgba(255, 255, 255, 0.8);
-  margin: 0;
-  padding: 0;
-  display: block;
-}
-
-/* 透明交互层 */
-.touch-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 5;
-}
-
-/* 游戏覆盖层 */
-.game-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  max-width: 600rpx;
-  padding: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
-  border-radius: 20rpx;
-  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.3);
   z-index: 100;
 }
 
 .overlay-content {
   text-align: center;
   padding: 40rpx;
+  background-color: rgba(44, 95, 141, 0.85);
+  width: 70%;
+  max-width: 600rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.3);
 }
 
 .overlay-title {
@@ -295,33 +162,25 @@
   display: block;
   font-size: 28rpx;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 40rpx;
+  margin-bottom: 50rpx;
 }
 
-.btn-start, .btn-resume, .btn-restart {
-  background: linear-gradient(135deg, #1E90FF, #4682B4);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  padding: 20rpx 60rpx;
+.btn-start, .btn-next {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #333;
+  border: none;
+  padding: 24rpx 80rpx;
   border-radius: 50rpx;
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: bold;
-  margin: 10rpx;
-  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.4);
 }
 
-.btn-restart {
-  background: linear-gradient(135deg, #87CEEB, #ADD8E6);
-  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
-}
-
-/* 胜利界面样式 */
 .win-stats {
-  margin: 30rpx 0;
+  margin: 30rpx 0 40rpx;
   padding: 20rpx;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 15rpx;
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .stat-line {
@@ -329,62 +188,4 @@
   font-size: 28rpx;
   color: rgba(255, 255, 255, 0.95);
   margin: 12rpx 0;
-  text-align: center;
-}
-
-.overlay-hint {
-  display: block;
-  font-size: 26rpx;
-  color: rgba(255, 255, 255, 0.8);
-  margin: 20rpx 0;
-  text-align: center;
-}
-
-.btn-next {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #333;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  padding: 24rpx 80rpx;
-  border-radius: 50rpx;
-  font-size: 34rpx;
-  font-weight: bold;
-  margin: 10rpx;
-  box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.4);
-  width: 80%;
-}
-
-.btn-replay, .btn-back {
-  background: linear-gradient(135deg, #1E90FF, #4682B4);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  padding: 20rpx 60rpx;
-  border-radius: 50rpx;
-  font-size: 30rpx;
-  font-weight: bold;
-  margin: 10rpx;
-  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
-  width: 70%;
-}
-
-.btn-back {
-  background: linear-gradient(135deg, #87CEEB, #ADD8E6);
-  color: #333;
-}
-
-
-/* 动画 */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.pulse-animation {
-  animation: pulse 2s ease infinite;
 }

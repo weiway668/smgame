@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/maze/maze",
-    "pages/match3/match3"
+    "pages/match3/match3",
+    "pages/maze-3d/maze-3d"
   ],
   "window": {
     "backgroundTextStyle": "light",

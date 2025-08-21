@@ -1,0 +1,214 @@
+/* pages/maze-3d/maze-3d.wxss */
+
+.container {
+  height: 100vh;
+  background: linear-gradient(180deg, #E6F2FF 0%, #FFFFFF 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* 改为从顶部开始布局 */
+  padding: 0;
+  overflow: hidden;
+}
+
+.top-bar {
+  width: 100%;
+  padding: 20rpx;
+  text-align: center;
+  box-sizing: border-box;
+  z-index: 10; /* 确保在canvas之上 */
+}
+
+.level-indicator {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2c5f8d;
+  padding: 10rpx 30rpx;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 20rpx;
+  display: inline-block;
+}
+
+.game-wrapper {
+  width: 100%;
+  /* 高度减去顶部和底部栏的大致高度 */
+  height: calc(100vh - 300rpx);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.maze-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* 底部UI */
+.bottom-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 40rpx;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 180rpx; /* 调整位置，为新控制器留出空间 */
+  left: 0;
+  z-index: 10;
+}
+
+.stats-container {
+  display: flex;
+  gap: 30rpx;
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 15rpx 30rpx;
+  border-radius: 20rpx;
+}
+
+.stat-icon {
+  margin-right: 8rpx;
+}
+
+.restart-button-wrapper {
+  display: flex;
+}
+
+.restart-btn {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  font-size: 40rpx;
+  color: #333;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
+  padding: 0;
+  line-height: 1;
+}
+
+/* 新的控制器样式 */
+.controls {
+  position: fixed;
+  bottom: 30rpx;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 20;
+}
+
+.control-btn {
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(44, 95, 141, 0.7);
+  color: white;
+  border-radius: 50%;
+  font-size: 60rpx;
+  font-weight: bold;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 5rpx 15rpx rgba(0, 0, 0, 0.2);
+}
+
+.walk-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.walk-btn {
+  width: 100rpx;
+  height: 100rpx;
+  font-size: 50rpx;
+}
+
+/* 覆盖层样式 (保持不变) */
+.game-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.overlay-content {
+  text-align: center;
+  padding: 40rpx;
+  background-color: rgba(44, 95, 141, 0.85);
+  width: 70%;
+  max-width: 600rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.3);
+}
+
+.overlay-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 20rpx;
+}
+
+.overlay-desc {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 50rpx;
+}
+
+.btn-start, .btn-next, .btn-restart, .btn-back {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 20rpx 60rpx;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin: 10rpx;
+  width: 80%;
+}
+
+.btn-start, .btn-next {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #333;
+  box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.4);
+}
+
+.btn-restart {
+  background: linear-gradient(135deg, #1E90FF, #4682B4);
+  box-shadow: 0 4rpx 12rpx rgba(30, 144, 255, 0.3);
+}
+
+.btn-back {
+  background: linear-gradient(135deg, #87CEEB, #ADD8E6);
+  color: #333;
+  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
+  margin-top: 30rpx;
+}
+
+.win-stats {
+  margin: 30rpx 0 40rpx;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15rpx;
+}
+
+.stat-line {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 12rpx 0;
+}

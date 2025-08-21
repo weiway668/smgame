@@ -1,0 +1,75 @@
+<!--pages/maze-3d/maze-3d.wxml-->
+<view class="container">
+  <view class="top-bar">
+    <view class="level-indicator">第 {{currentLevel > 20 ? 20 : currentLevel}} 关</view>
+  </view>
+
+  <!-- 游戏区域 -->
+  <view class="game-wrapper">
+    <canvas 
+      type="2d" 
+      id="maze-canvas" 
+      class="maze-canvas"
+      bindtouchstart="touchStart"
+      bindtouchmove="touchMove"
+      bindtouchend="touchEnd"
+    ></canvas>
+  </view>
+
+  <!-- 游戏状态覆盖层 -->
+  <view class="game-overlay" wx:if="{{gameStatus === 'ready' && isOverlayVisible}}">
+    <view class="overlay-content">
+      <text class="overlay-title">第 {{currentLevel}} 关</text>
+      <text class="overlay-desc">使用下方按钮或滑动屏幕移动</text>
+      <button class="btn-start" bindtap="startGame">开始挑战</button>
+    </view>
+  </view>
+  
+  <view class="game-overlay" wx:if="{{gameStatus === 'win' && isOverlayVisible}}">
+    <view class="overlay-content">
+      <block wx:if="{{allLevelsCompleted}}">
+        <text class="overlay-title">🎉 恭喜通关！</text>
+        <text class="overlay-desc">你已是真正的迷宫大师！</text>
+        <button class="btn-next" bindtap="nextLevel">从第一关开始</button>
+      </block>
+      <block wx:else>
+        <text class="overlay-title">🎉 第 {{currentLevel - 1}} 关完成！</text>
+        <view class="win-stats">
+          <text class="stat-line">✨ 步数：{{steps}} 步</text>
+          <text class="stat-line">⏱ 用时：{{time}} 秒</text>
+        </view>
+        <button class="btn-next" bindtap="nextLevel">下一关</button>
+      </block>
+    </view>
+  </view>
+
+  <view class="game-overlay" wx:if="{{gameStatus === 'lose' && isOverlayVisible}}">
+    <view class="overlay-content">
+      <text class="overlay-title">⌛️ 时间到！</text>
+      <text class="overlay-desc">再快一点就成功啦！</text>
+      <button class="btn-restart" bindtap="restartGame">重新挑战</button>
+      <button class="btn-back" bindtap="showSolution">查看答案</button>
+    </view>
+  </view>
+
+  <!-- 底部统计与控制 -->
+  <view class="bottom-bar">
+    <view class="stats-container">
+        <view class="stat-item"><text class="stat-icon">👣</text> {{steps}}</view>
+        <view class="stat-item"><text class="stat-icon">⏱</text> {{time}} / {{timeLimit}}s</view>
+    </view>
+    <view class="restart-button-wrapper">
+        <view class="restart-btn" bindtap="restartGame">↻</view>
+    </view>
+  </view>
+
+  <!-- 新的控制按钮 -->
+  <view class="controls">
+    <button class="control-btn turn-btn" bindtap="turn" data-direction="left">↰</button>
+    <view class="walk-controls">
+        <button class="control-btn walk-btn" bindtap="walk" data-direction="forward">↑</button>
+        <button class="control-btn walk-btn" bindtap="walk" data-direction="backward">↓</button>
+    </view>
+    <button class="control-btn turn-btn" bindtap="turn" data-direction="right">↱</button>
+  </view>
+</view>

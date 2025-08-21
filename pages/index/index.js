@@ -20,6 +20,14 @@ Page({
         desc: '消除方块，获得高分',
         color: '#FFDAB9',  // 淡桃色
         path: '/pages/match3/match3'
+      },
+      {
+        id: 'maze3d',
+        name: '3D迷宫',
+        icon: '🧊',
+        desc: '身临其境的挑战',
+        color: '#A7C7E7', // 淡蓝色
+        path: '/pages/maze-3d/maze-3d'
       }
     ],
     // 设置

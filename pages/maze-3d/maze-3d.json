@@ -1,0 +1,9 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "走迷宫",
+  "navigationBarBackgroundColor": "#1E90FF",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#E6F2FF",
+  "backgroundTextStyle": "light",
+  "disableScroll": true
+}
